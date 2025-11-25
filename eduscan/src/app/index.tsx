@@ -1,15 +1,33 @@
-import { Text, View } from "react-native";
+import { useState } from "react";
+import { FlatList, Text, View } from "react-native";
+import { getUsers } from "@core/modules/users/api.users";
+import { User } from "@core/modules/users/types.users";
+import { useEffect } from "react";
 
 export default function Index() {
+  const [ users, setUsers ] = useState<User[] | null>();
+  const [error, setError] = useState<String | null>(null);
+
+  useEffect(() => {
+    getUsers()
+      .then((users) => {
+        setUsers(users);
+      })
+      .catch((error) => {
+        setError(error);
+      });
+  }, []);
+
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
+    <View>
+      <FlatList
+        data={users}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }: { item: User }) => (
+          <Text>{item.name}</Text>
+        )}
+      />
     </View>
   );
-}
+};
+
