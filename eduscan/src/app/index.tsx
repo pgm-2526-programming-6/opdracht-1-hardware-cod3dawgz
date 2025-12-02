@@ -1,15 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FlatList, Text, View } from "react-native";
 import { getUsers } from "@core/modules/users/api.users";
 import { User } from "@core/modules/users/types.users";
-import { useEffect } from "react";
-import { useLocation } from "../components/functional/location/location";
+import useLocation from "../components/functional/location/location";
+import QRCode from "../app/qrcode/qrcode";
 
 export default function Index() {
   const [users, setUsers] = useState<User[] | null>();
   const [userError, setUserError] = useState<string | null>(null);
 
-  const { location, permission, locationError } = useLocation();
+  const { position } = useLocation();
 
   useEffect(() => {
     getUsers()
@@ -23,29 +23,24 @@ export default function Index() {
 
   return (
     <View style={{ padding: 20 }}>
-      <Text>Permission: {permission ?? "checking..."}</Text>
-
       {userError && (
         <Text style={{ color: "red", marginTop: 10 }}>
           User Error: {userError}
         </Text>
       )}
-      {locationError && (
-        <Text style={{ color: "red", marginTop: 10 }}>
-          Location Error: {locationError}
-        </Text>
-      )}
 
-      {location ? (
+      {position ? (
         <View style={{ marginTop: 15 }}>
-          <Text>Latitude: {location.coords.latitude}</Text>
-          <Text>Longitude: {location.coords.longitude}</Text>
-          <Text>Accuracy: {location.coords.accuracy} meters</Text>
+          <Text>Latitude: {position.coords.latitude}</Text>
+          <Text>Longitude: {position.coords.longitude}</Text>
+          <Text>Accuracy: {position.coords.accuracy} meters</Text>
         </View>
       ) : (
-        !locationError && <Text>Loading location...</Text>
+        <Text>Loading location...</Text>
       )}
 
+
+      <QRCode />
       <FlatList
         data={users}
         keyExtractor={(item) => item.id.toString()}

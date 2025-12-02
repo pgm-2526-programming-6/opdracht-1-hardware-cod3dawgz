@@ -1,44 +1,57 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import * as Location from "expo-location";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export function useLocation() {
-  const [location, setLocation] = useState<Location.LocationObject | null>(
+export default function useLocation() {
+  const [position, setPosition] = useState<Location.LocationObject | null>(
     null
   );
-  const [permission, setPermission] = useState<string | null>(null);
-  const [locationError, setLocationError] = useState<string | null>(null);
+  const [subscription, setSubscription] =
+    useState<Location.LocationSubscription | null>(null);
 
-  useEffect(() => {
-    const initLocation = async () => {
-      try {
-        // Check stored permission
-        const storedPermission = await AsyncStorage.getItem(
-          "location_permission"
-        );
+  // Start location tracking
+  const startLocationTracking = async () => {
+    // Request permissions
+    const { status } = await Location.requestForegroundPermissionsAsync();
 
-        // Request permission
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        setPermission(status);
-        await AsyncStorage.setItem("location_permission", status);
+    if (status !== "granted") {
+      alert("Permission to access location was denied");
+      return;
+    }
 
-        if (status !== "granted") {
-          setLocationError("Permission to access location was denied");
-          return;
-        }
-
-        // Get current location
-        const currentLocation = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.High,
-        });
-        setLocation(currentLocation);
-      } catch (err) {
-        setLocationError("Failed to get location: " + (err as Error).message);
+    // Set up the location subscription
+    const locationSubscription = await Location.watchPositionAsync(
+      {
+        accuracy: Location.Accuracy.High,
+        timeInterval: 5000, // Update every 5 seconds
+        distanceInterval: 5, // Update if moved by 5 meters
+      },
+      (newLocation) => {
+        setPosition(newLocation);
       }
-    };
+    );
 
-    initLocation();
+    setSubscription(locationSubscription);
+  };
+
+  // Stop location tracking
+  const stopLocationTracking = () => {
+    subscription?.remove();
+    setSubscription(null);
+  };
+
+  // Start tracking when component mounts
+  useEffect(() => {
+    startLocationTracking();
+
+    // Clean up subscription on unmount
+    return () => {
+      subscription?.remove();
+    };
   }, []);
 
-  return { location, permission, locationError };
+  return {
+    position,
+    startLocationTracking,
+    stopLocationTracking,
+  };
 }
