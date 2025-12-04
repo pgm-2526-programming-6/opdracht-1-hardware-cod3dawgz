@@ -11,7 +11,7 @@ export type Auth = {
 
 export type User = {
   email: string;
-};
+} & Profile;
 
 export type LoginBody = {
   email: string;
@@ -21,4 +21,4 @@ export type LoginBody = {
 export type CreateUserBody = {
   email: string;
   password: string;
-};
+} & CreateProfileBody;

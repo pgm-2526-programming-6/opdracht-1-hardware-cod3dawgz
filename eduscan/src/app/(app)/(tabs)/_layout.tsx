@@ -13,6 +13,13 @@ const TabLayout = () => {
           tabBarIcon: ({ color, size }) => <Icons size={size} name="home" color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Profile",
+          tabBarIcon: ({ color, size }) => <Icons size={size} name="info" color={color} />,
+        }}
+      />
     </Tabs>
   );
 };
