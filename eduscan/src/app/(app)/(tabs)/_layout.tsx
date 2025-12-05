@@ -14,6 +14,13 @@ const TabLayout = () => {
         }}
       />
       <Tabs.Screen
+        name="attendances"
+        options={{
+          title: "Attendances",
+          tabBarIcon: ({ color, size }) => <Icons size={size} name="calendar" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: "Profile",
