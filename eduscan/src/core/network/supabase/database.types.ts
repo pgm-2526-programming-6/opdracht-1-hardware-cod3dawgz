@@ -19,22 +19,22 @@ export type Database = {
           campus_id: number
           date: string
           id: number
-          student_id: number
-          teacher_id: number | null
+          student_id: string
+          teacher_id: string
         }
         Insert: {
           campus_id: number
           date: string
           id?: number
-          student_id: number
-          teacher_id?: number | null
+          student_id: string
+          teacher_id?: string
         }
         Update: {
           campus_id?: number
           date?: string
           id?: number
-          student_id?: number
-          teacher_id?: number | null
+          student_id?: string
+          teacher_id?: string
         }
         Relationships: [
           {
