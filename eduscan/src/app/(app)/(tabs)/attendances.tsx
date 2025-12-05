@@ -1,5 +1,5 @@
 import useUser from "@functional/auth/useUser";
-import { Attendance } from "@core/modules/attendances/types.attendances";
+import { AttendanceWithCampus } from "@core/modules/attendances/types.attendances";
 import { getAttendancesByUserId } from "@core/modules/attendances/api.attendances";
 import ErrorMessage from "@design/Alert/ErrorMessage";
 import ListItem from "@design/List/ListItem";
@@ -7,7 +7,7 @@ import LoadingIndicator from "@design/Loading/LoadingIndicator";
 import DefaultView from "@design/View/DefaultView";
 import EmptyView from "@design/View/EmptyView";
 import { useQuery } from "@tanstack/react-query";
-import { FlatList, Text } from "react-native";
+import { FlatList } from "react-native";
 
 export default function AttendancesPage() {
 
@@ -18,9 +18,9 @@ const {
         data: attendances,
         error, 
         isLoading,
-    } = useQuery<Attendance[]>({
+    } = useQuery<AttendanceWithCampus[]>({
         queryKey: ["attendances", userId], 
-        queryFn: () => getAttendancesByUserId(userId), 
+        queryFn: () => getAttendancesByUserId(userId),
         enabled: !!userId,
     });
 
@@ -55,8 +55,12 @@ const {
         <FlatList
             data={attendances}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }: { item: Attendance }) => (
-        <ListItem title={item.date} description={`campus: ${item.campus_id}`} onPress={() => {console.log(`press ${item.id}`);}}/>
+            renderItem={({ item }: { item: AttendanceWithCampus }) => (
+                <ListItem
+                    title={item.date}
+                    description={`campus: ${item.campus?.name ?? "Unknown"}`}
+                    onPress={() => console.log(`press ${item.id}`)}
+                />
 
         )}/>
     </DefaultView>

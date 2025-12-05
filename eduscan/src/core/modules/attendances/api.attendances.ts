@@ -1,12 +1,16 @@
 import { API } from "@core/network/supabase/api";
-import { Attendance } from "./types.attendances";
+import { AttendanceWithCampus } from "./types.attendances";
 
-export const getAttendancesByUserId = async (id: string): Promise<Attendance[]> => {
-  const { data, error } = await API.from("attendances").select("*").throwOnError();
-  return (data as Attendance[]);
+export const getAttendances = async (): Promise<AttendanceWithCampus[]> => {
+  const { data } = await API.from("attendances").select("*, campus:campuses(*)").throwOnError();
+  return data;
 };
 
-export const getAttendances = async (): Promise<Attendance[]> => {
-  const { data } = await API.from("attendances").select("*").throwOnError(); 
-  return Promise.resolve(data);
+export const getAttendancesByUserId = async (uid: string) => {
+  const { data } = await API
+    .from("attendances")
+    .select("*, campus:campuses(*)")
+    .eq("student_id", uid)
+    .throwOnError();
+  return data;
 };
