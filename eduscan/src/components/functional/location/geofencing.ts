@@ -20,10 +20,8 @@ TaskManager.defineTask(LOCATION_GEOFENCING_TASK, ({ data, error }) => {
   };
 
   if (eventType === Location.GeofencingEventType.Enter) {
-    console.log(`You've entered region: ${region.identifier}`);
     onEnterCallbacks.forEach((callback) => callback(region));
   } else if (eventType === Location.GeofencingEventType.Exit) {
-    console.log(`You've left region: ${region.identifier}`);
     onExitCallbacks.forEach((callback) => callback(region));
   }
 });
