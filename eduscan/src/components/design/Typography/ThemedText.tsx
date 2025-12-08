@@ -1,4 +1,4 @@
-import { Colors, Fonts, FontSizes } from "@style/theme";
+import { Colors, Fonts, FontSizes, Spacing } from "@style/theme";
 import { Text, type TextProps, StyleSheet, TextStyle, StyleProp } from "react-native";
 
 export type ThemedTextProps = TextProps & {
@@ -31,12 +31,15 @@ const ThemedText = ({
 
 const styles = StyleSheet.create({
   default: {
-    fontSize: FontSizes.default,
+    fontSize: FontSizes.md,
     fontFamily: Fonts.regular,
     color: Colors.text,
   },
   title: {
-    fontSize: FontSizes.xl,
+    fontSize: FontSizes.xxl,
+    fontFamily: Fonts.bold,
+    color: Colors.primary["600"],
+    marginVertical: Spacing.md,
   },
   bold: {
     fontFamily: Fonts.bold,
