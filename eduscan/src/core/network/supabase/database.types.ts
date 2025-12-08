@@ -12,51 +12,26 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "13.0.5"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       attendances: {
         Row: {
-          campus_id: number | null
-          date: string | null
+          campus_id: number
+          date: string
           id: number
           student_id: number
           teacher_id: number | null
         }
         Insert: {
-          campus_id?: number | null
-          date?: string | null
+          campus_id: number
+          date: string
           id?: number
           student_id: number
           teacher_id?: number | null
         }
         Update: {
-          campus_id?: number | null
-          date?: string | null
+          campus_id?: number
+          date?: string
           id?: number
           student_id?: number
           teacher_id?: number | null
@@ -73,14 +48,14 @@ export type Database = {
             foreignKeyName: "attendances_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
-            referencedRelation: "users"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "attendances_teacher_id_fkey"
             columns: ["teacher_id"]
             isOneToOne: false
-            referencedRelation: "users"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -127,37 +102,37 @@ export type Database = {
         }
         Relationships: []
       }
-      users: {
+      profiles: {
         Row: {
           class_id: number | null
           email: string
-          id: number
+          first_name: string | null
+          id: string
           is_teacher: boolean | null
-          name: string | null
-          password: string | null
+          last_name: string | null
           picture: string | null
         }
         Insert: {
           class_id?: number | null
           email: string
-          id?: number
+          first_name?: string | null
+          id?: string
           is_teacher?: boolean | null
-          name?: string | null
-          password?: string | null
+          last_name?: string | null
           picture?: string | null
         }
         Update: {
           class_id?: number | null
           email?: string
-          id?: number
+          first_name?: string | null
+          id?: string
           is_teacher?: boolean | null
-          name?: string | null
-          password?: string | null
+          last_name?: string | null
           picture?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "users_class_id_fkey"
+            foreignKeyName: "profiles_class_id_fkey"
             columns: ["class_id"]
             isOneToOne: false
             referencedRelation: "classes"
@@ -299,9 +274,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },
