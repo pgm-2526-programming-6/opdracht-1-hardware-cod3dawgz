@@ -34,7 +34,6 @@ const styles = StyleSheet.create({
     fontSize: FontSizes.default,
     fontFamily: Fonts.regular,
     color: Colors.text,
-    paddingHorizontal: Spacing.xl,
   },
   title: {
     fontSize: FontSizes.xxxl,
