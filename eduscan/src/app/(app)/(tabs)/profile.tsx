@@ -1,8 +1,9 @@
 import { logout } from "@core/modules/auth/api.auth";
 import { formatName } from "@core/modules/profiles/utils.profiles";
 import Button from "@design/Button/Button";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import useUser from "@functional/auth/useUser";
+import ThemedText from "@design/Typography/ThemedText";
 
 export default function ProfilePage() {
 
@@ -10,9 +11,9 @@ export default function ProfilePage() {
  
     return (
         <View>
-            <Text>Your account details</Text>
-            <Text>{formatName(user)}</Text>
-            <Text>You are a: {user.is_teacher ? "Teacher" : "Student"}</Text>
+            <ThemedText type="title">Your account details</ThemedText>
+            <ThemedText>{formatName(user)}</ThemedText>
+            <ThemedText>You are a: {user.is_teacher ? "Teacher" : "Student"}</ThemedText>
             <Button onPress={() => logout()} >logout</Button>
         </View>
     );
