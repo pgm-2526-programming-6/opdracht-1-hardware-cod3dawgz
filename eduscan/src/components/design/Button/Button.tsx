@@ -6,6 +6,7 @@ import { Pressable, StyleProp, StyleSheet, TextStyle, View, ViewStyle } from "re
 type BaseProps = {
   children: string;
   disabled?: boolean;
+  variant?: "primary" | "secondary" | "danger";
 };
 
 type HrefProps = BaseProps & {
@@ -20,10 +21,21 @@ type PressProps = BaseProps & {
   style?: StyleProp<ViewStyle>;
 };
 
-const Button = ({ onPress, href, children, style, disabled = false }: HrefProps | PressProps) => {
+const Button = ({ onPress, href, children, style, disabled = false, variant = "primary" }: HrefProps | PressProps) => {
   const content = (
-    <View style={[styles.background, disabled && styles.backgroundDisabled]}>
-      <ThemedText style={[styles.text, disabled && styles.textDisabled]}>{children}</ThemedText>
+    <View style={[
+      styles.background, 
+      variant === "secondary" && styles.backgroundSecondary,
+      variant === "danger" && styles.backgroundDanger,
+      disabled && styles.backgroundDisabled
+    ]}>
+      <ThemedText style={[
+        styles.text, 
+        variant === "secondary" && styles.textSecondary,
+        disabled && styles.textDisabled
+      ]}>
+        {children}
+      </ThemedText>
     </View>
   );
 
@@ -50,25 +62,45 @@ const Button = ({ onPress, href, children, style, disabled = false }: HrefProps 
 
 const styles = StyleSheet.create({
   background: {
-    backgroundColor: Colors.primary["700"],
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: Spacing.xs,
+    backgroundColor: Colors.primary["600"],
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    borderRadius: Spacing.sm,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  backgroundSecondary: {
+    backgroundColor: Colors.white,
+    borderWidth: 2,
+    borderColor: Colors.primary["600"],
+  },
+  backgroundDanger: {
+    backgroundColor: Colors.error["600"],
   },
   backgroundDisabled: {
     backgroundColor: Colors.gray["300"],
+    shadowOpacity: 0,
+    elevation: 0,
   },
   text: {
     textAlign: "center",
     color: Colors.white,
-    fontSize: FontSizes.default,
+    fontSize: FontSizes.md,
+    fontWeight: "600",
+  },
+  textSecondary: {
+    color: Colors.primary["600"],
   },
   textDisabled: {
-    opacity: 0.3,
-    color: Colors.text,
+    opacity: 0.5,
+    color: Colors.gray["500"],
   },
   pressed: {
-    opacity: 0.9,
+    opacity: 0.85,
+    transform: [{ scale: 0.98 }],
   },
 });
 

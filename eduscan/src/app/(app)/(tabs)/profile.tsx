@@ -13,7 +13,7 @@ export default function ProfilePage() {
             <Text>Your account details</Text>
             <Text>{formatName(user)}</Text>
             <Text>You are a: {user.is_teacher ? "Teacher" : "Student"}</Text>
-            <Button onPress={() => logout()}>logout</Button>
+            <Button onPress={() => logout()} >logout</Button>
         </View>
     );
 }
