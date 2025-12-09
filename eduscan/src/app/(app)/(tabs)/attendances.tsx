@@ -11,18 +11,19 @@ import { FlatList } from "react-native";
 
 export default function AttendancesPage() {
 
-    const user = useUser();
-    const userId = user?.id;
+  const user = useUser();
+  const userId = user?.id;
 
-const {
-        data: attendances,
-        error, 
-        isLoading,
+  const {
+      data: attendances,
+      error, 
+      isLoading,
     } = useQuery<AttendanceWithCampus[]>({
-        queryKey: ["attendances", userId], 
-        queryFn: () => getAttendancesByUserId(userId),
-        enabled: !!userId,
-    });
+      queryKey: ["attendances", userId], 
+      queryFn: () => getAttendancesByUserId(userId),
+      enabled: !!userId,
+  });
+
 
   if (error) {
     return (
@@ -59,7 +60,6 @@ const {
                 <ListItem
                     title={item.date}
                     description={`campus: ${item.campus?.name ?? "Unknown"}`}
-                    onPress={() => console.log(`press ${item.id}`)}
                 />
 
         )}/>
