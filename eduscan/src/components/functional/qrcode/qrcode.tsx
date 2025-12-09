@@ -6,6 +6,7 @@ import {
   onGeofenceEnter,
   onGeofenceExit,
 } from "@functional/location/geofencing";
+import StudentView from "@functional/qrcode/studentqr";
 import useLocation from "@functional/location/location";
 
 export default function QRCode() {
@@ -46,9 +47,10 @@ export default function QRCode() {
   return (
     <View style={styles.container}>
       {isInGeofence ? (
-        <View style={styles.qrContainer}>
+        <View>
           <Text style={styles.qrText}>✓ QR CODE</Text>
           <Text style={styles.successText}>You are inside Leeuwstraat!</Text>
+          <StudentView />
         </View>
       ) : (
         <View style={styles.errorContainer}>
@@ -69,12 +71,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
-  qrContainer: {
-    backgroundColor: "#4CAF50",
-    padding: 40,
-    borderRadius: 10,
-    alignItems: "center",
-  },
+
   qrText: {
     fontSize: 32,
     fontWeight: "bold",
