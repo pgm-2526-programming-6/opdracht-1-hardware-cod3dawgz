@@ -4,14 +4,16 @@ import Icons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Colors, Spacing } from "@style/theme";
 import { Href, Link } from "expo-router";
 import { ColorValue, Pressable, StyleSheet, View } from "react-native";
+import CheckMark from "@design/List/CheckMark";
 
 type BaseProps = {
-  title: string;
+  title?: string;
   description?: string;
   icon?: any;
   iconColor?: ColorValue;
   color?: ColorValue;
   right?: string;
+  variant?: string;
 };
 
 type HrefProps = BaseProps & {
@@ -33,6 +35,7 @@ const ListItem = ({
   iconColor = Colors.text,
   color,
   right,
+  variant,
 }: HrefProps | PressProps) => {
   let textContent: React.ReactNode;
   if (!isEmptyText(description)) {
@@ -48,6 +51,7 @@ const ListItem = ({
 
   let content = (
     <View style={styles.container}>
+      <CheckMark variant={variant}></CheckMark>
       {icon && <Icons style={styles.icon} name={icon} color={iconColor} size={24} />}
       {textContent}
       {right && <ThemedText style={[styles.right, color && { color }]}>{right}</ThemedText>}

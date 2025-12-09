@@ -7,19 +7,31 @@ import {
   onGeofenceExit,
 } from "@functional/location/geofencing";
 import StudentView from "@functional/qrcode/studentqr";
+import useLocation from "@functional/location/location";
 
 export default function QRCode() {
   const [isInGeofence, setIsInGeofence] = useState(false);
+  const { position, hasPermission } = useLocation();
 
   useEffect(() => {
-    startGeofencing();
+    if (!hasPermission) return;
+
+    const initGeofencing = async () => {
+      const success = await startGeofencing();
+      console.log("Geofencing started:", success);
+    };
+
+    initGeofencing();
+
     const unsubscribeEnter = onGeofenceEnter((region) => {
+      console.log("Entered:", region.identifier);
       if (region.identifier === "Leeuwstraat") {
         setIsInGeofence(true);
       }
     });
 
     const unsubscribeExit = onGeofenceExit((region) => {
+      console.log("Exited:", region.identifier);
       if (region.identifier === "Leeuwstraat") {
         setIsInGeofence(false);
       }
@@ -30,7 +42,7 @@ export default function QRCode() {
       unsubscribeExit();
       stopGeofencing();
     };
-  }, []);
+  }, [hasPermission]);
 
   return (
     <View style={styles.container}>

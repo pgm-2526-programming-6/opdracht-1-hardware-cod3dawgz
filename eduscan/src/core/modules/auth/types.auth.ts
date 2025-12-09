@@ -22,3 +22,11 @@ export type CreateUserBody = {
   email: string;
   password: string;
 } & CreateProfileBody;
+
+export type RegisterBody = {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+  is_teacher: boolean;
+};
