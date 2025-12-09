@@ -7,18 +7,25 @@ export default function useLocation() {
   );
   const [subscription, setSubscription] =
     useState<Location.LocationSubscription | null>(null);
-
-  // Start location tracking
+  const [hasPermission, setHasPermission] = useState(false);
   const startLocationTracking = async () => {
-    // Request permissions
     const { status } = await Location.requestForegroundPermissionsAsync();
 
     if (status !== "granted") {
       alert("Permission to access location was denied");
-      return;
+      return false;
     }
 
-    // Set up the location subscription
+    const { status: backgroundStatus } =
+      await Location.requestBackgroundPermissionsAsync();
+
+    if (backgroundStatus !== "granted") {
+      alert("Background location permission is required for geofencing");
+      return false;
+    }
+
+    setHasPermission(true);
+
     const locationSubscription = await Location.watchPositionAsync(
       {
         accuracy: Location.Accuracy.High,
@@ -31,26 +38,25 @@ export default function useLocation() {
     );
 
     setSubscription(locationSubscription);
+    return true;
   };
 
-  // Stop location tracking
   const stopLocationTracking = () => {
     subscription?.remove();
     setSubscription(null);
   };
 
-  // Start tracking when component mounts
   useEffect(() => {
     startLocationTracking();
 
-    // Clean up subscription on unmount
     return () => {
-      subscription?.remove();
+      stopLocationTracking();
     };
   }, []);
 
   return {
     position,
+    hasPermission,
     startLocationTracking,
     stopLocationTracking,
   };
