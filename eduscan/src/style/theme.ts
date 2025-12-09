@@ -14,6 +14,11 @@ const Primary = {
   "950": "#441b08",
 };
 
+const Checkbox = {
+  'red': 'red',
+  'green': 'green',
+}
+
 const Gray = {
   50: "#fafafa",
   100: "#f4f4f5",
@@ -33,6 +38,7 @@ export const Colors = {
     ...Primary,
   },
   gray: { ...Gray },
+  checkbox: {...Checkbox},
   error: {
     "50": "#fef2f2",
     "100": "#fee2e2",
