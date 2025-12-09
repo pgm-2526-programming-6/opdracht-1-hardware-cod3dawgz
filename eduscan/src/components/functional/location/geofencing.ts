@@ -3,14 +3,17 @@ import * as TaskManager from "expo-task-manager";
 
 const LOCATION_GEOFENCING_TASK = "LOCATION_GEOFENCING_TASK";
 
-// Store callbacks for geofencing events
 let onEnterCallbacks: ((region: Location.LocationRegion) => void)[] = [];
 let onExitCallbacks: ((region: Location.LocationRegion) => void)[] = [];
 
-// Define the task that will handle geofencing events
 TaskManager.defineTask(LOCATION_GEOFENCING_TASK, ({ data, error }) => {
   if (error) {
-    console.error("Geofencing task error:", error);
+    console.error("Geofencing error:", error);
+    return;
+  }
+
+  if (!data) {
+    console.error("No data received in geofencing task");
     return;
   }
 
@@ -19,84 +22,85 @@ TaskManager.defineTask(LOCATION_GEOFENCING_TASK, ({ data, error }) => {
     region: Location.LocationRegion;
   };
 
-  console.log(`Geofence event: ${eventType}, region: ${region.identifier}`);
+  console.log("Geofencing event:", eventType, region.identifier);
 
   if (eventType === Location.GeofencingEventType.Enter) {
-    console.log(`Entered region: ${region.identifier}`);
+    console.log(`You've entered region: ${region.identifier}`);
     onEnterCallbacks.forEach((callback) => callback(region));
   } else if (eventType === Location.GeofencingEventType.Exit) {
-    console.log(`Exited region: ${region.identifier}`);
+    console.log(`You've left region: ${region.identifier}`);
     onExitCallbacks.forEach((callback) => callback(region));
   }
 });
 
-// Start geofencing with better error handling
 export async function startGeofencing() {
   try {
-    // Check if task is registered
-    const isRegistered = await TaskManager.isTaskRegisteredAsync(
+    const isTaskDefined = await TaskManager.isTaskDefined(
       LOCATION_GEOFENCING_TASK
     );
-    console.log("Task registered:", isRegistered);
-
-    // Request foreground permission first
-    const foreground = await Location.requestForegroundPermissionsAsync();
-    console.log("Foreground permission:", foreground.status);
-
-    if (foreground.status !== "granted") {
-      throw new Error("Foreground location permission not granted");
+    if (!isTaskDefined) {
+      console.error("Geofencing task is not defined");
+      return false;
     }
 
-    // Then request background permission
-    const background = await Location.requestBackgroundPermissionsAsync();
-    console.log("Background permission:", background.status);
+    const { status: foregroundStatus } =
+      await Location.requestForegroundPermissionsAsync();
 
-    if (background.status !== "granted") {
-      throw new Error("Background location permission not granted");
+    if (foregroundStatus !== "granted") {
+      console.log("Foreground location permission not granted");
+      return false;
     }
 
-    // Check if background location is available
-    const hasServicesEnabled = await Location.hasServicesEnabledAsync();
-    console.log("Location services enabled:", hasServicesEnabled);
+    const { status: backgroundStatus } =
+      await Location.requestBackgroundPermissionsAsync();
 
-    if (!hasServicesEnabled) {
-      throw new Error("Location services are disabled");
+    if (backgroundStatus !== "granted") {
+      console.log("Background location permission not granted");
+      return false;
     }
 
-    // Define regions to monitor
-    const regions = [
+    const isRunning = await Location.hasStartedGeofencingAsync(
+      LOCATION_GEOFENCING_TASK
+    );
+    if (isRunning) {
+      console.log("Geofencing already running");
+      return true;
+    }
+
+    const regions: Location.LocationRegion[] = [
       {
         identifier: "Leeuwstraat",
         latitude: 51.042010797341185,
         longitude: 3.7315612107233624,
-        radius: 100,
+        radius: 100, // meters
         notifyOnEnter: true,
         notifyOnExit: true,
       },
     ];
 
-    console.log("Starting geofencing with regions:", regions);
-
-    // Start the geofencing task
     await Location.startGeofencingAsync(LOCATION_GEOFENCING_TASK, regions);
-    console.log("✅ Geofencing started successfully");
+    console.log("Geofencing started successfully");
+    return true;
   } catch (error) {
-    console.error("❌ Failed to start geofencing:", error);
-    throw error;
+    console.error("Error starting geofencing:", error);
+    return false;
   }
 }
 
-// Stop geofencing
 export async function stopGeofencing() {
   try {
-    await Location.stopGeofencingAsync(LOCATION_GEOFENCING_TASK);
-    console.log("Geofencing stopped");
+    const isRunning = await Location.hasStartedGeofencingAsync(
+      LOCATION_GEOFENCING_TASK
+    );
+    if (isRunning) {
+      await Location.stopGeofencingAsync(LOCATION_GEOFENCING_TASK);
+      console.log("Geofencing stopped");
+    }
   } catch (error) {
-    console.error("Failed to stop geofencing:", error);
+    console.error("Error stopping geofencing:", error);
   }
 }
 
-// Subscribe to geofencing events
 export function onGeofenceEnter(
   callback: (region: Location.LocationRegion) => void
 ) {
@@ -112,5 +116,19 @@ export function onGeofenceExit(
   onExitCallbacks.push(callback);
   return () => {
     onExitCallbacks = onExitCallbacks.filter((cb) => cb !== callback);
+  };
+}
+
+export async function getGeofencingStatus() {
+  const isTaskDefined = await TaskManager.isTaskDefined(
+    LOCATION_GEOFENCING_TASK
+  );
+  const isRunning = await Location.hasStartedGeofencingAsync(
+    LOCATION_GEOFENCING_TASK
+  );
+
+  return {
+    isTaskDefined,
+    isRunning,
   };
 }

@@ -11,10 +11,7 @@ export default function QRCode() {
   const [isInGeofence, setIsInGeofence] = useState(false);
 
   useEffect(() => {
-    // Start geofencing
     startGeofencing();
-
-    // Subscribe to enter/exit events
     const unsubscribeEnter = onGeofenceEnter((region) => {
       if (region.identifier === "Leeuwstraat") {
         setIsInGeofence(true);
@@ -27,7 +24,6 @@ export default function QRCode() {
       }
     });
 
-    // Cleanup
     return () => {
       unsubscribeEnter();
       unsubscribeExit();

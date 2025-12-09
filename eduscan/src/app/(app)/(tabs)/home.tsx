@@ -1,7 +1,7 @@
 import { Text, View } from "react-native";
 import ThemedText from "@design/Typography/ThemedText";
 import DefaultView from "@design/View/DefaultView";
-import QRCode from "../../../app/qrcode/qrcode";
+import QRCode from "@functional/qrcode/qrcode";
 
 
 export default function Homepage() {
