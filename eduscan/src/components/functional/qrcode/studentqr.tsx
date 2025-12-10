@@ -1,26 +1,34 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, Text, View, ActivityIndicator, Alert } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
+// Zorg ervoor dat je TeacherScanner (of TeacherView) importeert
+import TeacherScanner from './TeacherScanner'; // Pas het pad aan
 import { API } from "@core/network/supabase/api"; 
 import useUser from '@functional/auth/useUser';
+
+// ... (generateQrPayload, styles, etc. blijven hetzelfde)
 
 const generateQrPayload = (profileId: string): string => {
   const timestamp = new Date().toISOString(); 
   return `${profileId}|${timestamp}`; 
 };
 
-export const StudentView: React.FC = () => {
+type ProfileRole = 'student' | 'teacher' | null;
+
+const AttendanceView: React.FC = () => {
   
   const user = useUser(); 
   const currentUserId = user.id; 
 
   const [loading, setLoading] = useState<boolean>(true);
-  const [studentProfile, setStudentProfile] = useState<{ id: string, name: string } | null>(null);
+  // We slaan nu zowel de naam als de rol op
+  const [userProfile, setUserProfile] = useState<{ id: string, name: string, role: ProfileRole } | null>(null);
+  
   const [qrValue, setQrValue] = useState<string>('');
   const [refreshTimer, setRefreshTimer] = useState<number>(30);
   
   
-  const fetchStudentProfileAndSetQr = useCallback(async () => {
+  const fetchProfile = useCallback(async () => {
     setLoading(true);
     
     const { data: profile, error } = await API
@@ -32,39 +40,43 @@ export const StudentView: React.FC = () => {
     if (error) {
       console.error('Fout bij het ophalen van profiel:', error.message);
       Alert.alert('Fout', 'Kon het profiel niet ophalen.');
-      setStudentProfile(null);
+      setUserProfile(null);
     } else if (profile) {
       
-      const isStudent = !profile.is_teacher;
+      // Bepaal de rol
+      const isTeacher = !!profile.is_teacher; // is_teacher kan null zijn
+      const role: ProfileRole = isTeacher ? 'teacher' : 'student';
       
-      if (isStudent) {
-        const name = [profile.first_name, profile.last_name].filter(Boolean).join(' ') || profile.id;
+      const name = [profile.first_name, profile.last_name].filter(Boolean).join(' ') || profile.id;
 
-        setStudentProfile({
-            id: profile.id,
-            name: name,
-        });
-        
-        setQrValue(generateQrPayload(profile.id)); 
-      } else {
-        Alert.alert('Toegang geweigerd', 'Deze view is alleen voor studenten.');
-        setStudentProfile(null);
+      setUserProfile({
+          id: profile.id,
+          name: name,
+          role: role,
+      });
+
+      // QR-code alleen instellen als het een student is
+      if (role === 'student') {
+        setQrValue(generateQrPayload(profile.id));
       }
+      
     } else {
-       setStudentProfile(null);
+       setUserProfile(null);
     }
     setLoading(false);
   }, [currentUserId]); 
 
+  // ** Data Fetch **
   useEffect(() => {
-    fetchStudentProfileAndSetQr();
-  }, [fetchStudentProfileAndSetQr]); 
+    fetchProfile();
+  }, [fetchProfile]); 
 
+  // ** QR Refresh Timer (alleen voor studenten) **
   useEffect(() => {
-    if (!studentProfile) return; 
+    if (userProfile?.role !== 'student') return; 
 
     const refreshQr = () => {
-        setQrValue(generateQrPayload(studentProfile.id));
+        setQrValue(generateQrPayload(userProfile.id));
     };
 
     const interval = setInterval(() => {
@@ -78,46 +90,63 @@ export const StudentView: React.FC = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [studentProfile]); 
+  }, [userProfile]); 
 
   
   if (loading) {
     return (
       <View style={[styles.container, { justifyContent: 'center' }]}>
-        <ActivityIndicator size="large" color="#e81aaeff" />
-        <Text style={{ marginTop: 10 }}>Studentprofiel laden...</Text>
+        <ActivityIndicator size="large" color="#1a73e8" />
+        <Text style={{ marginTop: 10 }}>Profiel en rol laden...</Text>
       </View>
     );
   }
 
-  if (!studentProfile) {
+  if (!userProfile) {
     return <Text style={styles.errorText}>Geen toegang: Profiel niet gevonden.</Text>;
   }
-  
-  return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Aanwezigheidscode</Text>
-      <Text style={styles.subHeader}>{studentProfile.name}</Text>
-      <Text style={styles.instructionText}>Laat deze code aan de docent zien.</Text>
-      
-      <View style={styles.qrCodeBox}>
-        <QRCode 
-            value={qrValue} 
-            size={240}
-            ecl="H"
-            color="#000000ff" 
-            backgroundColor="white"
-        />
-      </View>
 
-      <Text style={styles.timeText}>
-        Nieuw code over: <Text style={styles.timerCount}>{refreshTimer}s</Text>
-      </Text>
-    </View>
-  );
+  // --- CONDITIONELE RENDERING ---
+
+  // 1. Docent View (QR Scanner)
+  if (userProfile.role === 'teacher') {
+      return <TeacherScanner teacherName={userProfile.name} />;
+  }
+
+  // 2. Student View (QR Code)
+  if (userProfile.role === 'student') {
+      return (
+        <View style={styles.container}>
+          <Text style={styles.header}>Aanwezigheidscode</Text>
+          <Text style={styles.subHeader}>{userProfile.name}</Text>
+          <Text style={styles.instructionText}>Laat deze code aan de docent zien.</Text>
+          
+          <View style={styles.qrCodeBox}>
+            <QRCode 
+                value={qrValue} 
+                size={240}
+                ecl="H"
+                color="#000000ff" 
+                backgroundColor="white"
+            />
+          </View>
+
+          <Text style={styles.timeText}>
+            Nieuw code over: <Text style={styles.timerCount}>{refreshTimer}s</Text>
+          </Text>
+        </View>
+      );
+  }
+  
+  // Standaard fallback voor onbekende rol (zou niet mogen gebeuren)
+  return <Text style={styles.errorText}>Rol niet herkend.</Text>;
 };
 
-export default StudentView;
+export default AttendanceView;
+
+
+// 💡 Let op: De stijlen moeten gecombineerd worden met de stijlen van TeacherScanner als je ze in één bestand houdt,
+// maar in dit voorbeeld heb ik ze gesplitst gehouden.
 
 const styles = StyleSheet.create({
     container: {
