@@ -26,7 +26,7 @@ export type Database = {
           campus_id: number
           date: string
           id?: number
-          student_id: string
+          student_id?: string
           teacher_id?: string
         }
         Update: {
@@ -64,26 +64,26 @@ export type Database = {
         Row: {
           address: string | null
           id: number
-          latitude: number | null
-          longitude: number | null
+          latitude: number
+          longitude: number
           name: string
-          radius: number | null
+          radius: number
         }
         Insert: {
           address?: string | null
           id?: number
-          latitude?: number | null
-          longitude?: number | null
+          latitude: number
+          longitude: number
           name: string
-          radius?: number | null
+          radius: number
         }
         Update: {
           address?: string | null
           id?: number
-          latitude?: number | null
-          longitude?: number | null
+          latitude?: number
+          longitude?: number
           name?: string
-          radius?: number | null
+          radius?: number
         }
         Relationships: []
       }
@@ -104,31 +104,31 @@ export type Database = {
       }
       profiles: {
         Row: {
-          class_id: number | null
+          class_id: number
           email: string
-          first_name: string | null
+          first_name: string
           id: string
-          is_teacher: boolean | null
-          last_name: string | null
-          picture: string | null
+          is_teacher: boolean
+          last_name: string
+          picture: string
         }
         Insert: {
-          class_id?: number | null
+          class_id?: number
           email: string
-          first_name?: string | null
+          first_name: string
           id?: string
-          is_teacher?: boolean | null
-          last_name?: string | null
-          picture?: string | null
+          is_teacher?: boolean
+          last_name: string
+          picture?: string
         }
         Update: {
-          class_id?: number | null
+          class_id?: number
           email?: string
-          first_name?: string | null
+          first_name?: string
           id?: string
-          is_teacher?: boolean | null
-          last_name?: string | null
-          picture?: string | null
+          is_teacher?: boolean
+          last_name?: string
+          picture?: string
         }
         Relationships: [
           {
