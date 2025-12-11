@@ -1,14 +1,13 @@
 import React from 'react';
 import { useCameraPermissions } from 'expo-camera';
-import { router } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
+import QrScanner from './QrScanner';
 import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 interface TeacherScannerProps {
-    teacherName: string;
+    teacherId: string;
 }
 
-const TeacherScanner: React.FC<TeacherScannerProps> = ({ teacherName }) => {
+const TeacherScanner: React.FC<TeacherScannerProps> = ({ teacherId }) => {
   const [permission, requestPermission] = useCameraPermissions();
 
   const isPermissionGranted = Boolean(permission?.granted);
@@ -20,7 +19,7 @@ const TeacherScanner: React.FC<TeacherScannerProps> = ({ teacherName }) => {
   if (!isPermissionGranted) {
     return (
       <View style={[styles.container, { justifyContent: 'center' }]}>
-        <Text style={styles.header}>Welkom, {teacherName}</Text>
+        <Text style={styles.header}>Welkom, {teacherId}</Text>
         <Text style={styles.instructionText}>Docentmodus: Camera nodig om QR codes te scannen.</Text>
         <Pressable style={[styles.mainBtn, styles.btnGreen]} onPress={requestPermission}>
           <Text style={{color: 'white'}}>Vraag Camera Rechten Aan</Text>
@@ -30,19 +29,7 @@ const TeacherScanner: React.FC<TeacherScannerProps> = ({ teacherName }) => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar style="auto" />
-      <Text style={styles.header}>Scanner Klaar</Text>
-      <Text style={styles.subHeader}>Welkom, {teacherName}</Text>
-      <Text style={styles.instructionText}>Druk op &apos;Scan Code&apos; om de camera te starten.</Text>
-
-      <Pressable 
-        onPress={() => { router.replace("./qrScan"); }} 
-        style={[styles.mainBtn, styles.btnYellow]} 
-      >
-        <Text style={{fontWeight: 'bold'}}>Scan Aanwezigheidscode</Text>
-      </Pressable>
-    </SafeAreaView>
+    <QrScanner />
   );
 }
 
@@ -75,10 +62,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 5,
         color: '#333', 
-    },
-    subHeader: {
-        fontSize: 18,
-        color: '#555',
     },
     instructionText: {
         fontSize: 16,
