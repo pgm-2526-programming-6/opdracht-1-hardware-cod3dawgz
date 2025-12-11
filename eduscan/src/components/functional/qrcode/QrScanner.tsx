@@ -64,7 +64,7 @@ export default function QrScanner() {
 
     setScanned(true); 
 
-    const scanResult = mockScan(data, MOCK_TEACHER_USER_ID);
+    const scanResult = 'test';
     
     const isSuccess = scanResult.startsWith('SUCCESS');
 
