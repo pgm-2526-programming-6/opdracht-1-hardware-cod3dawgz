@@ -7,7 +7,7 @@ import LoadingIndicator from "@design/Loading/LoadingIndicator";
 import DefaultView from "@design/View/DefaultView";
 import EmptyView from "@design/View/EmptyView";
 import { useQuery } from "@tanstack/react-query";
-import { FlatList } from "react-native";
+import { FlatList, Text } from "react-native";
 
 export default function AttendancesPage() {
 
@@ -60,6 +60,7 @@ export default function AttendancesPage() {
                 <ListItem
                     title={item.date}
                     description={`campus: ${item.campus?.name ?? "Unknown"}`}
+                    onPress={() => {}}
                 />
 
         )}/>
