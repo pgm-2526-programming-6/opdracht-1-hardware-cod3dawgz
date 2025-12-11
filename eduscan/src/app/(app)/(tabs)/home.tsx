@@ -11,7 +11,6 @@ export default function Homepage() {
 
   return (
     <DefaultView>    
-      <ThemedText> Home Screen </ThemedText>
       
       {user.is_teacher ? <TeacherScanner teacherId={user.id} />: <StudentQrCode />}
 

@@ -89,23 +89,19 @@ const QrGenerator: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Aanwezigheidscode</Text>
-      <Text style={styles.subHeader}>{userProfile.name}</Text>
-      <Text style={styles.instructionText}>Laat deze code aan de docent zien.</Text>
+      <Text style={styles.header}>Scan This Code</Text>
       
       <View style={styles.qrCodeBox}>
         <QRCode 
             value={qrValue} 
-            size={240}
+            size={300}
             ecl="H"
-            color="#000000ff" 
-            backgroundColor="white"
+            color="#000000" 
+            backgroundColor="#FFFFFF"
         />
       </View>
-
-      <Text style={styles.timeText}>
-        Nieuwe code over: <Text style={styles.timerCount}>{refreshTimer}s</Text>
-      </Text>
+      
+      <Text style={styles.timeText}>Auto-refresh in {refreshTimer}s</Text>
     </View>
   );
 };
@@ -120,21 +116,18 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   header: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    color: '#000000ff',
-  },
-  subHeader: {
-    fontSize: 18,
-    color: '#555',
+    fontSize: 24,
+    fontWeight: '600',
+    marginBottom: 40,
+    color: '#000000',
+    textAlign: 'center',
   },
   instructionText: {
     fontSize: 16,
-    color: '#000000ff',
-    marginTop: 10,
-    marginBottom: 30,
-    fontWeight: '600',
+    color: '#666666',
+    marginTop: 30,
+    marginBottom: 20,
+    textAlign: 'center',
   },
   errorText: {
     fontSize: 18,
@@ -143,25 +136,21 @@ const styles = StyleSheet.create({
     padding: 40,
   },
   qrCodeBox: {
-    width: 250,
-    height: 250,
+    backgroundColor: '#ffffffff',
+    padding: 20,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 30,
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 10,
-    padding: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   timeText: {
-    fontSize: 16,
-    color: '#888',
-    fontStyle: 'italic',
-    marginTop: 10,
+    fontSize: 14,
+    color: '#888888',
+    textAlign: 'center',
+    marginTop: 30,
   },
-  timerCount: {
-    fontWeight: 'bold',
-    color: '#ee3827ff',
-    fontSize: 18,
-  }
 });

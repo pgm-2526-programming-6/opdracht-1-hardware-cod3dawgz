@@ -1,6 +1,6 @@
-import { CameraView, CameraType, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
+import { CameraView, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
 import { useState } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
+import { Button, StyleSheet, Text, View, Alert } from 'react-native';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 
@@ -38,7 +38,6 @@ const MOCK_PROFILES = [
 
 
 export default function QrScanner() {
-  const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   
   const [scanned, setScanned] = useState(false); 
@@ -89,20 +88,16 @@ export default function QrScanner() {
     );
   };
 
-  function toggleCameraFacing() {
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
-  }
-
   return (
     <View style={styles.container}>
       <CameraView 
         style={styles.camera} 
-        facing={facing} 
+        facing="back"
         onBarcodeScanned={scanned ? undefined : handleBarCodeScanned} 
         barcodeScannerSettings={{
           barcodeTypes: ['qr'],
         }}
-      >
+      />
         <View style={styles.scanOverlay}>
           <Text style={styles.scanText}>
             {scanned ? (
@@ -114,13 +109,6 @@ export default function QrScanner() {
             )}
           </Text>
         </View>
-      </CameraView>
-      
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-          <Text style={styles.text}>Flip Camera</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
