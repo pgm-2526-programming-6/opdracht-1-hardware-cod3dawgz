@@ -1,4 +1,4 @@
-import Icons from "@expo/vector-icons/Feather";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { StyleSheet, View } from "react-native";
 import { Spacing } from "@style/theme";
 
@@ -14,7 +14,8 @@ const CheckMark = ({ variant = "success", size = 24 }: CheckMarkProps) => {
 
   return (
     <View style={styles.container}>
-      <Icons name={iconName} size={size} color={color} />
+      <MaterialIcons
+       name={iconName} size={size} color={color} />
     </View>
   );
 };
