@@ -59,7 +59,7 @@ export default function ProfilePage() {
                     </TouchableOpacity>
                 )}
 
-                <Button onPress={() => logout()} style={styles.logoutButton}>logout</Button>
+                <Button onPress={() => logout()} style={styles.logoutButton}>Log out</Button>
                 
             </View>
         </DefaultView>
