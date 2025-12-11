@@ -13,8 +13,8 @@ const TabLayout = () => {
       <Tabs.Screen
         name="home"
         options={{
-          title: "Home",
-          tabBarIcon: ({ color, size }) => <MaterialIcons size={size} name="qr-code" color={color} />,
+          title: isTeacher ? "Scan" : "Code",
+          tabBarIcon: ({ color, size }) => <MaterialIcons size={size} name={isTeacher ? "qr-code-scanner" : "qr-code"}  color={color} />,
         }}
       />
       <Tabs.Screen
