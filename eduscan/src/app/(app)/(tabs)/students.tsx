@@ -56,7 +56,7 @@ export default function AttendancesPage() {
     );
   }
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().split("T")[0];  
 
   const attendancesToday = attendances.filter(
     (item) => item.date?.split("T")[0] === today
