@@ -167,7 +167,7 @@ export default function AttendancesPage() {
               ? `${item.student.first_name} ${item.student.last_name}` 
               : undefined}
             variant={item.status}
-            description={item.campus ? `campus: ${item.campus.name}` : "Absent"}
+            description={item.campus ? `campus: ${item.campus.name}` : ""}
             onPress={() => {}}
           />
         )}
