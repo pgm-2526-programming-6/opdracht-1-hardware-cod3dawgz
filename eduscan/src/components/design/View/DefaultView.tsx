@@ -18,6 +18,7 @@ const DefaultView = ({ style, padding = true, children, ...props }: Props) => {
 const styles = StyleSheet.create({
   view: {
     flex: 1,
+    backgroundColor: '#F5F5F5',
   },
   viewPadding: {
     paddingVertical: Spacing.xl,

@@ -7,7 +7,6 @@ import {
   onGeofenceExit,
 } from "@functional/location/geofencing";
 import useLocation from "@functional/location/location";
-import { getCampusById } from "@functional/location/geofencing";
 import QrGenerator from "./QrGenerator";
 
 export default function StudentQrCode() {
@@ -16,16 +15,12 @@ export default function StudentQrCode() {
   const { hasPermission } = useLocation();
 
   const isInGeofence = activeCampuses.size > 0;
-  const currentCampus =
-    isInGeofence ? Array.from(activeCampuses)[0] : null;
-
-  const campus = currentCampus ? getCampusById(currentCampus) : null;
 
   useEffect(() => {
     if (!hasPermission) return;
 
     const initGeofencing = async () => {
-      const success = await startGeofencing();
+      await startGeofencing();
     };
 
     initGeofencing();
@@ -57,25 +52,20 @@ export default function StudentQrCode() {
     };
   }, [hasPermission]);
 
-  return (
-    <View style={styles.container}>
-      {isInGeofence ? (
-        <View style={styles.qrContainer}>
-            <Text style={styles.successText}>
-              You are at Campus {campus ? campus.name : "Unknown campus"}
-            </Text>
-            <QrGenerator/>
-        </View>
-      ) : (
+  if (!isInGeofence) {
+    return (
+      <View style={styles.container}>
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>QR Code not available</Text>
           <Text style={styles.errorSubtext}>
             You must be at a campus to view the QR code
           </Text>
         </View>
-      )}
-    </View>
-  );
+      </View>
+    );
+  }
+
+  return <QrGenerator />;
 }
 
 const styles = StyleSheet.create({
@@ -84,22 +74,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-  },
-  qrContainer: {
-    backgroundColor: "#4CAF50",
-    padding: 40,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  qrText: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "white",
-  },
-  successText: {
-    fontSize: 16,
-    color: "white",
-    marginTop: 10,
   },
   errorContainer: {
     backgroundColor: "#f44336",
