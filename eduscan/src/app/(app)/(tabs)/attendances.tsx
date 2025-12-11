@@ -22,6 +22,8 @@ export default function AttendancesPage() {
       queryKey: ["attendances", userId], 
       queryFn: () => getAttendancesByUserId(userId),
       enabled: !!userId,
+      refetchInterval: 10000, 
+      refetchOnWindowFocus: true, 
   });
 
 
