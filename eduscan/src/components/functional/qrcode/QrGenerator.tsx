@@ -6,12 +6,15 @@ import { API } from "@core/network/supabase/api";
 import useUser from '@functional/auth/useUser';
 import { Colors } from '../../../style/theme';
 
-const generateQrPayload = (profileId: string): string => {
-  const timestamp = new Date().toISOString(); 
-  return `${profileId}|${timestamp}`; 
+interface QrGeneratorProps {
+  campusId: string;
+}
+
+const generateQrPayload = (profileId: string, timestamp: string, campusId: string): string => {
+  return JSON.stringify({profileId, timestamp, campusId}); 
 };
 
-const QrGenerator: React.FC = () => {
+const QrGenerator = ({ campusId }: QrGeneratorProps) => {
   const user = useUser(); 
   const currentUserId = user.id;
 
@@ -25,7 +28,7 @@ const QrGenerator: React.FC = () => {
     
     const { data: profile, error } = await API
       .from('profiles')
-      .select(`id, first_name, last_name`)
+      .select('*')
       .eq('id', currentUserId)
       .single(); 
       
@@ -44,7 +47,7 @@ const QrGenerator: React.FC = () => {
         name: name
       });
 
-      setQrValue(generateQrPayload(profile.id));
+      setQrValue(generateQrPayload(profile.id, new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString(), campusId));
       
     } else {
       setUserProfile(null);
@@ -60,7 +63,7 @@ const QrGenerator: React.FC = () => {
     if (!userProfile) return;
 
     const refreshQr = () => {
-      setQrValue(generateQrPayload(userProfile.id));
+      setQrValue(generateQrPayload(userProfile.id, new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString(), campusId));
     };
 
     const interval = setInterval(() => {
