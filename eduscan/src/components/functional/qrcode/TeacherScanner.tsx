@@ -2,27 +2,25 @@ import React from 'react';
 import { useCameraPermissions } from 'expo-camera';
 import QrScanner from './QrScanner';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 interface TeacherScannerProps {
     teacherId: string;
 }
-
-const TeacherScanner: React.FC<TeacherScannerProps> = ({ teacherId }) => {
+const TeacherScanner = ({ teacherId }: TeacherScannerProps) => {
   const [permission, requestPermission] = useCameraPermissions();
-
-  const isPermissionGranted = Boolean(permission?.granted);
-
+  
   if (!permission) {
     return <Text style={styles.errorText}>Camera rechten controleren...</Text>;
   }
   
-  if (!isPermissionGranted) {
+  if (!permission.granted) {
     return (
-      <View style={[styles.container, { justifyContent: 'center' }]}>
-        <Text style={styles.header}>Welkom, {teacherId}</Text>
-        <Text style={styles.instructionText}>Docentmodus: Camera nodig om QR codes te scannen.</Text>
-        <Pressable style={[styles.mainBtn, styles.btnGreen]} onPress={requestPermission}>
-          <Text style={{color: 'white'}}>Vraag Camera Rechten Aan</Text>
+      <View style={styles.container}>
+        <MaterialIcons name="warning-amber" size={128} color='#ffa550' />
+        <Text style={styles.instructionText}>You need to allow Eduscan to access the camera</Text>
+        <Pressable style={styles.mainBtn} onPress={requestPermission}>
+          <Text style={styles.btnText}>Allow Camera</Text>
         </Pressable>
       </View>
     );
@@ -38,42 +36,34 @@ export default TeacherScanner;
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#fff',
       alignItems: 'center',
       justifyContent: 'center',
-      rowGap: 20
     },
     mainBtn: {
-      width: 250,
+      width: 200,
       height: 50,
       justifyContent: "center",
       alignItems: "center",
       borderRadius: 10,
       marginTop: 20,
-    },
-    btnGreen: {
-      backgroundColor: '#1a73e8',
-    },
-    btnYellow: {
-      backgroundColor: "yellow",
-    },
-    header: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        marginBottom: 5,
-        color: '#333', 
+      backgroundColor: '#f06e0f',
     },
     instructionText: {
         fontSize: 16,
-        color: '#333',
+        width: 200,
+        height: 'auto',
+        textAlign: 'center',
+        color: '#f06e0f',
         marginTop: 10,
         marginBottom: 30,
         fontWeight: '600',
     },
-    errorText: {
-        fontSize: 18,
-        color: 'red',
-        textAlign: 'center',
-        padding: 40,
+    btnText: {
+        fontSize: 16,
+        color: 'white',
     },
+    errorText: {
+      color: 'red',
+      fontSize: 16,
+    }
 });

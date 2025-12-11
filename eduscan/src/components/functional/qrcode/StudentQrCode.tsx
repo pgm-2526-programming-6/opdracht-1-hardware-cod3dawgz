@@ -16,6 +16,7 @@ export default function StudentQrCode() {
   const [activeCampuses, setActiveCampuses] = useState<Set<string>>(new Set());
 
   const { hasPermission } = useLocation();
+  const currentCampusId = Array.from(activeCampuses)[0];
 
   const isInGeofence = activeCampuses.size > 0;
 
@@ -24,12 +25,12 @@ export default function StudentQrCode() {
 
     const initGeofencing = async () => {
       await startGeofencing();
-    };
+    };    
 
     initGeofencing();
 
     const unsubscribeEnter = onGeofenceEnter((region) => {
-    console.log("entered:", region.identifier);
+    //console.log("entered:", region.identifier);
 
     setActiveCampuses(prev => {
       const updated = new Set(prev);
@@ -39,7 +40,7 @@ export default function StudentQrCode() {
   });
 
   const unsubscribeExit = onGeofenceExit((region) => {
-    console.log("Exited:", region.identifier);
+    //console.log("Exited:", region.identifier);
 
     setActiveCampuses(prev => {
       const updated = new Set(prev);
@@ -65,5 +66,33 @@ export default function StudentQrCode() {
     );
   }
 
-  return <QrGenerator />;
+  return <QrGenerator campusId={currentCampusId} />;
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  errorContainer: {
+    backgroundColor: "#f44336",
+    padding: 40,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  errorText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "white",
+  },
+  errorSubtext: {
+    fontSize: 14,
+    color: "white",
+    marginTop: 10,
+    textAlign: "center",
+  },
+});
+  
 }

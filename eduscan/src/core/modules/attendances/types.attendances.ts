@@ -10,5 +10,7 @@ export type AttendanceWithCampus = Attendance & {
 
 export type AttendanceWithStudent = AttendanceWithCampus & {
   student: Profile;
-  status: string;
+  status?: string;
 };
+
+export type AttendanceInsert = Omit<Attendance, "id">;
