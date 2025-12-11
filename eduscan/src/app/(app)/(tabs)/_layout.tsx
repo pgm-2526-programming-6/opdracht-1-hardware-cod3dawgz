@@ -1,4 +1,4 @@
-import Icons from "@expo/vector-icons/Feather";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { DefaultScreenOptions } from "@style/theme";
 import { Tabs } from "expo-router";
 import useUser from "@functional/auth/useUser";
@@ -14,14 +14,14 @@ const TabLayout = () => {
         name="home"
         options={{
           title: "Home",
-          tabBarIcon: ({ color, size }) => <Icons size={size} name="home" color={color} />,
+          tabBarIcon: ({ color, size }) => <MaterialIcons size={size} name="qr-code" color={color} />,
         }}
       />
       <Tabs.Screen
         name="attendances"
         options={{
           title: "Attendances",
-          tabBarIcon: ({ color, size }) => <Icons size={size} name="calendar" color={color} />,
+          tabBarIcon: ({ color, size }) => <MaterialIcons size={size} name="calendar-month" color={color} />,
           href: isTeacher ? null : "/attendances",
         }}
       />
@@ -29,7 +29,7 @@ const TabLayout = () => {
         name="students"
         options={{
           title: "Students",
-          tabBarIcon: ({ color, size }) => <Icons size={size} name="check" color={color} />,
+          tabBarIcon: ({ color, size }) => <MaterialIcons size={size} name="check" color={color} />,
           href: isTeacher ? "/students" : null,
         }}
       />
@@ -37,7 +37,7 @@ const TabLayout = () => {
         name="profile"
         options={{
           title: "Profile",
-          tabBarIcon: ({ color, size }) => <Icons size={size} name="info" color={color} />,
+          tabBarIcon: ({ color, size }) => <MaterialIcons size={size} name="info" color={color} />,
         }}
       />
     </Tabs>
