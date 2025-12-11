@@ -18,7 +18,7 @@ type ProfileRole = 'student' | 'teacher' | null;
 const AttendanceView: React.FC = () => {
   
   const user = useUser(); 
-  const currentUserId = user.id; 
+  const currentUserId = user.id;
 
   const [loading, setLoading] = useState<boolean>(true);
   // We slaan nu zowel de naam als de rol op
