@@ -1,68 +1,87 @@
-import { CameraView, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
-import { useState } from 'react';
-import { Button, StyleSheet, Text, View, Alert } from 'react-native';
-import * as Haptics from 'expo-haptics';
-import { Colors, Spacing } from '@style/theme';
+import { CameraView, BarcodeScanningResult } from "expo-camera";
+import { useState } from "react";
+import { StyleSheet, Text, View, Alert } from "react-native";
+import * as Haptics from "expo-haptics";
+import { Colors, Spacing } from "@style/theme";
+import { createAttendance, checkAttendanceExists } from "@core/modules/attendances/api.attendances";
+import { useMutation } from "@tanstack/react-query";
+import { AttendanceInsert } from "@core/modules/attendances/types.attendances";
+import useUser from "@functional/auth/useUser";
 
 export default function QrScanner() {
-  
-  const [scanned, setScanned] = useState(false); 
+  const [scanned, setScanned] = useState(false);
+  const user = useUser();
 
+  const attendanceMutation = useMutation({
+    mutationFn: createAttendance,
+  });
 
-  const handleBarCodeScanned = async ({ data }: BarcodeScanningResult) => {
+  const handleQrCodeScanned = async ({ data }: BarcodeScanningResult) => {
+    try {
+      const jsonData = JSON.parse(data);
 
-    setScanned(true); 
+      setScanned(true);
 
-    const scanResult = 'SUCCESS';
-    
-    const isSuccess = scanResult.startsWith('SUCCESS');
+      const date = jsonData.timestamp;
+      
+      if (Date.now() - new Date(date).getTime() > 35000) {
+        throw new Error("QR code is expired");
+      }
 
-    if (isSuccess) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    } else {
+      const attendanceDate = new Date(date);
+      const existingAttendance = await checkAttendanceExists(
+        jsonData.profileId,
+        attendanceDate
+      );
+
+      if (existingAttendance) {
+        throw new Error("Student is already present.");
+      }
+
+      const attendanceData: AttendanceInsert = {
+        campus_id: jsonData.campusId,
+        date: date,
+        student_id: jsonData.profileId,
+        teacher_id: user.id,
+      };
+
+      await attendanceMutation.mutateAsync(attendanceData);
+
+      await Haptics.notificationAsync(
+        Haptics.NotificationFeedbackType.Success
+      );
+
+      Alert.alert("Attendance Recorded", "Attendance has been recorded", [
+        { text: "OK", onPress: () => setScanned(false) },
+      ]);
+    } catch (error) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Error", `${error}`, [
+        { text: "OK", onPress: () => setScanned(false) },
+      ]);
     }
-
-    Alert.alert(
-      isSuccess ? 'Attendance Recorded' : 'Scan Failed',
-      scanResult,
-      [
-        {
-          text: 'OK', 
-          onPress: () => {
-            setScanned(false); 
-          }
-        }
-      ],
-      { cancelable: false } 
-    );
   };
 
   return (
     <View style={styles.container}>
-      <CameraView 
-        style={styles.camera} 
+      <CameraView
+        style={styles.camera}
         facing="back"
-        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned} 
+        onBarcodeScanned={scanned ? undefined : handleQrCodeScanned}
         barcodeScannerSettings={{
-          barcodeTypes: ['qr'],
+          barcodeTypes: ["qr"],
         }}
       />
       <View style={styles.overlay}>
-        {/* Top instruction text */}
         <View style={styles.topSection}>
           <Text style={styles.instructionText}>
-            {scanned ? 'Processing...' : 'Scan QR Code'}
+            {scanned ? "Processing..." : "Scan QR Code"}
           </Text>
-          <Text style={styles.subText}>
-            {scanned ? 'Please wait' : ''}
-          </Text>
+          <Text style={styles.subText}>{scanned ? "Please wait" : ""}</Text>
         </View>
 
-        {/* Middle section with scan frame */}
         <View style={styles.middleSection}>
           <View style={styles.scanFrame}>
-            {/* Corner frames */}
             <View style={[styles.corner, styles.topLeft]} />
             <View style={[styles.corner, styles.topRight]} />
             <View style={[styles.corner, styles.bottomLeft]} />
@@ -70,12 +89,13 @@ export default function QrScanner() {
           </View>
         </View>
 
-        {/* Bottom section */}
         <View style={styles.bottomSection}>
           <View style={styles.statusIndicator}>
-            <View style={[styles.statusDot, scanned && styles.statusDotActive]} />
+            <View
+              style={[styles.statusDot, scanned && styles.statusDotActive]}
+            />
             <Text style={styles.statusText}>
-              {scanned ? 'Scanning...' : 'Ready to scan'}
+              {scanned ? "Scanning..." : "Ready to scan"}
             </Text>
           </View>
         </View>
@@ -87,65 +107,56 @@ export default function QrScanner() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    backgroundColor: '#000',
-  },
-  message: {
-    textAlign: 'center',
-    paddingBottom: 10,
-    fontSize: 16,
-    color: Colors.text,
+    justifyContent: "center",
+    backgroundColor: "#000",
   },
   camera: {
     flex: 1,
   },
   overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    position: "absolute",
+    inset: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   topSection: {
     flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
+    justifyContent: "flex-end",
+    alignItems: "center",
     paddingBottom: Spacing.xl,
   },
   middleSection: {
     flex: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   bottomSection: {
     flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    justifyContent: "flex-start",
+    alignItems: "center",
     paddingTop: Spacing.xl,
   },
   instructionText: {
     color: Colors.white,
     fontSize: 24,
-    fontWeight: '600',
-    textAlign: 'center',
+    fontWeight: "600",
+    textAlign: "center",
     marginBottom: Spacing.xs,
   },
   subText: {
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: "rgba(255, 255, 255, 0.8)",
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
   },
   scanFrame: {
     width: 280,
     height: 280,
-    position: 'relative',
+    position: "relative",
   },
   corner: {
-    position: 'absolute',
+    position: "absolute",
     width: 40,
     height: 40,
-    borderColor: Colors.primary['500'],
+    borderColor: Colors.primary["500"],
     borderWidth: 4,
   },
   topLeft: {
@@ -177,9 +188,9 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 8,
   },
   statusIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.sm,
     borderRadius: 24,
@@ -188,15 +199,15 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: Colors.gray['400'],
+    backgroundColor: Colors.gray["400"],
     marginRight: Spacing.sm,
   },
   statusDotActive: {
-    backgroundColor: Colors.primary['500'],
+    backgroundColor: Colors.primary["500"],
   },
   statusText: {
     color: Colors.white,
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 });

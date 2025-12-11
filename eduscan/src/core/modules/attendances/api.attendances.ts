@@ -2,6 +2,7 @@ import { API } from "@core/network/supabase/api";
 import {
   AttendanceWithCampus,
   AttendanceWithStudent,
+  AttendanceInsert,
 } from "./types.attendances";
 
 export const getAttendances = async (): Promise<AttendanceWithCampus[]> => {
@@ -28,3 +29,21 @@ export const getAttendancesByTeacherId = async (
     .throwOnError();
   return data;
 };
+
+export const createAttendance = async (attendance: AttendanceInsert) => {
+  return API.from("attendances")
+    .insert(attendance)
+    .select()
+    .single()
+    .throwOnError();
+};
+
+export const checkAttendanceExists = async (profileId: string, date: Date) => {
+  const { data } = await API.from("attendances")
+    .select("*")
+    .eq("student_id", profileId)
+    .eq("date", date.toISOString().split("T")[0])
+    .throwOnError();
+  return data.length > 0;
+}
+
