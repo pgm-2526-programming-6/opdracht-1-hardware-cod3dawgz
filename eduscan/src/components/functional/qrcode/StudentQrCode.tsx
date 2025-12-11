@@ -8,6 +8,9 @@ import {
 } from "@functional/location/geofencing";
 import useLocation from "@functional/location/location";
 import QrGenerator from "./QrGenerator";
+import { Colors, Spacing, FontSizes, Fonts } from "@style/theme";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import EmptyView from "@design/View/EmptyView";
 
 export default function StudentQrCode() {
   const [activeCampuses, setActiveCampuses] = useState<Set<string>>(new Set());
@@ -54,42 +57,13 @@ export default function StudentQrCode() {
 
   if (!isInGeofence) {
     return (
-      <View style={styles.container}>
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>QR Code not available</Text>
-          <Text style={styles.errorSubtext}>
-            You must be at a campus to view the QR code
-          </Text>
-        </View>
-      </View>
+      <EmptyView
+        title="Wrong Location"
+        description="You're not at campus"
+        icon="location-off"
+      />
     );
   }
 
   return <QrGenerator />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  errorContainer: {
-    backgroundColor: "#f44336",
-    padding: 40,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  errorText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "white",
-  },
-  errorSubtext: {
-    fontSize: 14,
-    color: "white",
-    marginTop: 10,
-    textAlign: "center",
-  },
-});

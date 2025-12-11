@@ -9,7 +9,7 @@ const TabLayout = () => {
   const isTeacher = user.is_teacher;
   
   return (
-    <Tabs screenOptions={DefaultScreenOptions}>
+    <Tabs screenOptions={{ ...DefaultScreenOptions, headerTitle: "" }}>
       <Tabs.Screen
         name="home"
         options={{

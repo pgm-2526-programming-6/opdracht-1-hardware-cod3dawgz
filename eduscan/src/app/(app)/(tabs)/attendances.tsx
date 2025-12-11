@@ -2,17 +2,19 @@ import useUser from "@functional/auth/useUser";
 import { AttendanceWithCampus } from "@core/modules/attendances/types.attendances";
 import { getAttendancesByUserId } from "@core/modules/attendances/api.attendances";
 import ErrorMessage from "@design/Alert/ErrorMessage";
-import ListItem from "@design/List/ListItem";
 import LoadingIndicator from "@design/Loading/LoadingIndicator";
 import DefaultView from "@design/View/DefaultView";
 import EmptyView from "@design/View/EmptyView";
+import AttendanceCalendar from "@functional/calendar/AttendanceCalendar";
 import { useQuery } from "@tanstack/react-query";
-import { FlatList, Text } from "react-native";
+import { ScrollView } from "react-native";
+import { useColorBlindMode } from "@core/utils/ColorBlindModeContext";
 
 export default function AttendancesPage() {
 
   const user = useUser();
   const userId = user?.id;
+  const { isColorBlindMode } = useColorBlindMode();
 
   const {
       data: attendances,
@@ -22,6 +24,8 @@ export default function AttendancesPage() {
       queryKey: ["attendances", userId], 
       queryFn: () => getAttendancesByUserId(userId),
       enabled: !!userId,
+      refetchInterval: 10000, 
+      refetchOnWindowFocus: true, 
   });
 
 
@@ -46,24 +50,18 @@ export default function AttendancesPage() {
       <EmptyView
         title="No Attendances"
         description="You have no attendances yet."
-        icon="calendar"
+        icon="calendar-today"
       />
     );
   }
 
-  return (
-    <DefaultView padding={false}>
-        <FlatList
-            data={attendances}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }: { item: AttendanceWithCampus }) => (
-                <ListItem
-                    title={item.date}
-                    description={`campus: ${item.campus?.name ?? "Unknown"}`}
-                    onPress={() => {}}
-                />
+  const attendanceDates = attendances.map(attendance => attendance.date);
 
-        )}/>
+  return (
+    <DefaultView>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <AttendanceCalendar attendanceDates={attendanceDates} showIcons={isColorBlindMode} />
+      </ScrollView>
     </DefaultView>
-    );
+  );
 };
