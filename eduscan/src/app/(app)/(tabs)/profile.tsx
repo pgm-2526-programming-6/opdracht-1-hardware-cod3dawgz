@@ -4,6 +4,7 @@ import Button from "@design/Button/Button";
 import useUser from "@functional/auth/useUser";
 import ThemedText from "@design/Typography/ThemedText";
 import DefaultView from "@design/View/DefaultView";
+import { Text } from "react-native";
 
 export default function ProfilePage() {
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useCameraPermissions } from 'expo-camera';
 import QrScanner from './QrScanner';
-import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 interface TeacherScannerProps {
     teacherId: string;
