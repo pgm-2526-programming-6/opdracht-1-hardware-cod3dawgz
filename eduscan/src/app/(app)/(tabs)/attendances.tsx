@@ -7,7 +7,7 @@ import LoadingIndicator from "@design/Loading/LoadingIndicator";
 import DefaultView from "@design/View/DefaultView";
 import EmptyView from "@design/View/EmptyView";
 import { useQuery } from "@tanstack/react-query";
-import { FlatList, Text } from "react-native";
+import { FlatList } from "react-native";
 
 export default function AttendancesPage() {
 
@@ -46,13 +46,13 @@ export default function AttendancesPage() {
       <EmptyView
         title="No Attendances"
         description="You have no attendances yet."
-        icon="calendar"
+        icon="calendar-today"
       />
     );
   }
 
   return (
-    <DefaultView padding={false}>
+    <DefaultView>
         <FlatList
             data={attendances}
             keyExtractor={(item) => item.id.toString()}

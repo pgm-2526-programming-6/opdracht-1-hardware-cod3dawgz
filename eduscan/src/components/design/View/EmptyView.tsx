@@ -1,7 +1,7 @@
 import Button from "@design/Button/Button";
 import ThemedText from "@design/Typography/ThemedText";
 import CenteredView from "@design/View/CenteredView";
-import Icons from "@expo/vector-icons/Feather";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Colors, Spacing } from "@style/theme";
 import { Href } from "expo-router";
 import { StyleSheet } from "react-native";
@@ -16,7 +16,7 @@ type Props = {
 const EmptyView = ({ title, description, icon, href }: Props) => {
   return (
     <CenteredView>
-      <Icons name={icon} size={Spacing["3xl"]} color={Colors.primary["400"]} />
+      <MaterialIcons name={icon} size={Spacing["3xl"]} color={Colors.primary["400"]} />
       <ThemedText style={[styles.title, styles.text]} type="title">
         {title}
       </ThemedText>
