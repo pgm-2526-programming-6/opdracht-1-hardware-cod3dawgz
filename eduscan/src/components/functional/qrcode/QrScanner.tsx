@@ -57,14 +57,10 @@ export default function QrScanner() {
   }
 
   const handleBarCodeScanned = async ({ data }: BarcodeScanningResult) => {
-    
-    if (scanned) {
-        return; 
-    }
 
     setScanned(true); 
 
-    const scanResult = 'test';
+    const scanResult = 'SUCCESS';
     
     const isSuccess = scanResult.startsWith('SUCCESS');
 
