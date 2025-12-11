@@ -169,6 +169,7 @@ const Register = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    backgroundColor: '#F5F5F5',
   },
   title: {
     marginBottom: Spacing["2xl"],
