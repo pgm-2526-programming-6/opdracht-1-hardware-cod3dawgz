@@ -42,15 +42,15 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date() }: Atte
     return attendanceSet.has(dateKey);
   };
 
-  const isPastWeekday = (day: number) => {
+  const isPastOrTodayWeekday = (day: number) => {
     const date = new Date(year, month, day);
     const dayOfWeek = date.getDay();
-    // Check if it's a weekday (Mon-Fri) and in the past
-    return dayOfWeek !== 0 && dayOfWeek !== 6 && date < today && !isToday(day);
+    // Check if it's a weekday (Mon-Fri) and today or in the past
+    return dayOfWeek !== 0 && dayOfWeek !== 6 && date <= today;
   };
 
   const isAbsent = (day: number) => {
-    return isPastWeekday(day) && !hasAttendance(day);
+    return isPastOrTodayWeekday(day) && !hasAttendance(day);
   };
 
   // Build calendar grid (weekdays only: Mon-Fri)
@@ -106,23 +106,23 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date() }: Atte
                 <View
                   style={[
                     styles.dayContent,
-                    isTodayDay && styles.todayContent,
-                    !isTodayDay && hasAttendanceDay && styles.presentContent,
-                    !isTodayDay && isAbsentDay && styles.absentContent,
+                    hasAttendanceDay && styles.presentContent,
+                    isAbsentDay && styles.absentContent,
+                    isTodayDay && hasAttendanceDay && styles.todayPresentBorder,
+                    isTodayDay && isAbsentDay && styles.todayAbsentBorder,
+                    isTodayDay && !hasAttendanceDay && !isAbsentDay && styles.todayBorder,
                   ]}
                 >
                   <Text
                     style={[
                       styles.dayText,
+                      hasAttendanceDay && styles.presentText,
+                      isAbsentDay && styles.absentText,
                       isTodayDay && styles.todayText,
-                      !isTodayDay && hasAttendanceDay && styles.presentText,
-                      !isTodayDay && isAbsentDay && styles.absentText,
                     ]}
                   >
                     {day}
                   </Text>
-                  {!isTodayDay && hasAttendanceDay && <View style={styles.presentDot} />}
-                  {!isTodayDay && isAbsentDay && <View style={styles.absentDot} />}
                 </View>
               </View>
             );
@@ -238,10 +238,17 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     position: "relative",
   },
-  todayContent: {
-    backgroundColor: Colors.primary["600"],
+  todayBorder: {
+    borderWidth: 3,
+    borderColor: Colors.gray["400"],
+  },  todayPresentBorder: {
+    borderWidth: 3,
+    borderColor: "#10b981",
   },
-  presentContent: {
+  todayAbsentBorder: {
+    borderWidth: 3,
+    borderColor: "#ef4444",
+  },  presentContent: {
     backgroundColor: "#d1fae5",
     borderWidth: 1.5,
     borderColor: "#6ee7b7",
@@ -258,7 +265,6 @@ const styles = StyleSheet.create({
     color: Colors.gray["700"],
   },
   todayText: {
-    color: Colors.white,
     fontFamily: Fonts.bold,
   },
   presentText: {
