@@ -9,11 +9,11 @@ returns trigger as $$
 begin
   -- Insert a new row into public.profiles
   -- including the new user's id, first_name, last_name, and email.
-  insert into public.profiles (id, last_name, first_name, email)
+  insert into public.profiles (id, first_name, last_name, email)
   values (
     new.id,
-    new.raw_user_meta_data->>'last_name',
     new.raw_user_meta_data->>'first_name',
+    new.raw_user_meta_data->>'last_name',
     new.email  -- New: Get the email directly from the 'new' user record
   );
   return new;
