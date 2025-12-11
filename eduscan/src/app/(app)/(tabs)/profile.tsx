@@ -5,14 +5,35 @@ import useUser from "@functional/auth/useUser";
 import ThemedText from "@design/Typography/ThemedText";
 import DefaultView from "@design/View/DefaultView";
 import { View, StyleSheet, Switch, TouchableOpacity } from "react-native";
-import Icons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Colors, Spacing } from "@style/theme";
 import { useColorBlindMode } from "@core/utils/ColorBlindModeContext";
+
+const getInitials = (firstName?: string, lastName?: string) => {
+    const first = firstName?.charAt(0).toUpperCase() || "";
+    const last = lastName?.charAt(0).toUpperCase() || "";
+    return first + last;
+};
+
+const getColorFromString = (str: string) => {
+    const colors = [
+        "#ef4444", "#f97316", "#f59e0b", "#eab308", "#84cc16",
+        "#22c55e", "#10b981", "#14b8a6", "#06b6d4", "#0ea5e9",
+        "#3b82f6", "#6366f1", "#8b5cf6", "#a855f7", "#d946ef",
+        "#ec4899", "#f43f5e"
+    ];
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+};
 
 export default function ProfilePage() {
 
     const user = useUser();
     const { isColorBlindMode, toggleColorBlindMode } = useColorBlindMode();
+    const initials = getInitials(user.first_name, user.last_name);
+    const avatarColor = getColorFromString(user.email || user.id || "");
  
     return (
         <DefaultView padding={false}>
@@ -20,8 +41,8 @@ export default function ProfilePage() {
                 <ThemedText style={styles.header}>Profile</ThemedText>
                 
                 <View style={styles.avatarContainer}>
-                    <View style={styles.avatar}>
-                        <Icons name="account" size={64} color={Colors.white} />
+                    <View style={[styles.avatar, { backgroundColor: avatarColor }]}>
+                        <ThemedText style={styles.initialsText}>{initials}</ThemedText>
                     </View>
                 </View>
 
@@ -86,9 +107,14 @@ const styles = StyleSheet.create({
         width: 120,
         height: 120,
         borderRadius: 60,
-        backgroundColor: Colors.primary["500"],
         alignItems: "center",
         justifyContent: "center",
+        overflow: "hidden",
+    },
+    initialsText: {
+        fontSize: 48,
+        fontWeight: "bold",
+        color: Colors.white,
     },
     infoCard: {
         width: "90%",
