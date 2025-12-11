@@ -8,11 +8,13 @@ import EmptyView from "@design/View/EmptyView";
 import AttendanceCalendar from "@functional/calendar/AttendanceCalendar";
 import { useQuery } from "@tanstack/react-query";
 import { ScrollView } from "react-native";
+import { useColorBlindMode } from "@core/utils/ColorBlindModeContext";
 
 export default function AttendancesPage() {
 
   const user = useUser();
   const userId = user?.id;
+  const { isColorBlindMode } = useColorBlindMode();
 
   const {
       data: attendances,
@@ -53,13 +55,12 @@ export default function AttendancesPage() {
     );
   }
 
-  // Extract dates from attendances
   const attendanceDates = attendances.map(attendance => attendance.date);
 
   return (
     <DefaultView>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <AttendanceCalendar attendanceDates={attendanceDates} />
+        <AttendanceCalendar attendanceDates={attendanceDates} showIcons={isColorBlindMode} />
       </ScrollView>
     </DefaultView>
   );

@@ -90,7 +90,7 @@ export default function AttendancesPage() {
 
   return (
     <DefaultView padding={false}>
-      <Text>Todays Students</Text>
+
       <FlatList
         data={studentAttendanceStatus}
         keyExtractor={(item) => item.student.id}

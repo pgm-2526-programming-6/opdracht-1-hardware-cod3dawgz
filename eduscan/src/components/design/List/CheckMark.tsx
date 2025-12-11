@@ -9,7 +9,7 @@ type CheckMarkProps = {
 
 const CheckMark = ({ variant = "success", size = 24 }: CheckMarkProps) => {
   const isSuccess = variant === "success";
-  const iconName = isSuccess ? "check-circle" : "x-circle";
+  const iconName = isSuccess ? "check" : "close";
   const color = isSuccess ? "#22c55e" : "#ef4444";
 
   return (

@@ -1,9 +1,11 @@
 import { View, Text, StyleSheet } from "react-native";
 import { Colors, Spacing, FontSizes, Fonts } from "@style/theme";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 type AttendanceCalendarProps = {
-  attendanceDates: string[]; // Array of dates in 'YYYY-MM-DD' format
+  attendanceDates: string[];
   currentMonth?: Date;
+  showIcons?: boolean;
 };
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
@@ -12,16 +14,14 @@ const MONTHS = [
   "July", "August", "September", "October", "November", "December"
 ];
 
-const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date() }: AttendanceCalendarProps) => {
+const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIcons = false }: AttendanceCalendarProps) => {
   const today = new Date();
   const year = currentMonth.getFullYear();
   const month = currentMonth.getMonth();
 
-  // Get first day of month and number of days
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  // Convert attendance dates to Set for quick lookup
   const attendanceSet = new Set(
     attendanceDates.map(date => {
       const d = new Date(date);
@@ -45,7 +45,6 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date() }: Atte
   const isPastOrTodayWeekday = (day: number) => {
     const date = new Date(year, month, day);
     const dayOfWeek = date.getDay();
-    // Check if it's a weekday (Mon-Fri) and today or in the past
     return dayOfWeek !== 0 && dayOfWeek !== 6 && date <= today;
   };
 
@@ -53,19 +52,14 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date() }: Atte
     return isPastOrTodayWeekday(day) && !hasAttendance(day);
   };
 
-  // Build calendar grid (weekdays only: Mon-Fri)
   const renderCalendarDays = () => {
     const days = [];
-    
-    // Adjust firstDay: 0=Sun, 1=Mon, ..., 6=Sat
-    // For Mon-Fri grid: Mon=0, Tue=1, Wed=2, Thu=3, Fri=4
-    // Map Sunday (0) -> skip, Monday (1) -> 0, ..., Friday (5) -> 4, Saturday (6) -> skip
+
     const adjustedFirstDay = firstDay === 0 || firstDay === 6 ? -1 : firstDay - 1;
     
     let dayCounter = 1;
-    let currentDayOfWeek = firstDay; // Track actual day of week
+    let currentDayOfWeek = firstDay; 
 
-    // Calculate total rows needed
     let totalWeekdays = 0;
     let tempDay = 1;
     let tempDayOfWeek = firstDay;
@@ -83,13 +77,10 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date() }: Atte
       const week = [];
       for (let col = 0; col < 5; col++) {
         const index = row * 5 + col;
-        
-        // Check if we should show a day or empty cell
+
         if ((row === 0 && adjustedFirstDay >= 0 && col < adjustedFirstDay) || dayCounter > daysInMonth) {
-          // Empty cell
           week.push(<View key={`empty-${index}`} style={styles.dayCell} />);
         } else if (dayCounter <= daysInMonth) {
-          // Skip weekends
           while (dayCounter <= daysInMonth && (currentDayOfWeek === 0 || currentDayOfWeek === 6)) {
             dayCounter++;
             currentDayOfWeek = (currentDayOfWeek + 1) % 7;
@@ -123,6 +114,22 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date() }: Atte
                   >
                     {day}
                   </Text>
+                  {showIcons && hasAttendanceDay && (
+                    <MaterialIcons 
+                      name="check" 
+                      size={18} 
+                      color="#10b981" 
+                      style={styles.icon}
+                    />
+                  )}
+                  {showIcons && isAbsentDay && (
+                    <MaterialIcons 
+                      name="close" 
+                      size={18} 
+                      color="#ef4444" 
+                      style={styles.icon}
+                    />
+                  )}
                 </View>
               </View>
             );
@@ -146,14 +153,12 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date() }: Atte
 
   return (
     <View style={styles.container}>
-      {/* Month/Year Header */}
       <Text style={styles.monthText}>
         {MONTHS[month]} {year}
       </Text>
 
-      {/* Calendar Card */}
       <View style={styles.calendarCard}>
-        {/* Day Headers */}
+
         <View style={styles.weekRow}>
           {DAYS.map((day) => (
             <View key={day} style={styles.dayHeaderCell}>
@@ -162,22 +167,24 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date() }: Atte
           ))}
         </View>
 
-        {/* Calendar Days */}
         {renderCalendarDays()}
       </View>
 
-      {/* Legend */}
       <View style={styles.legend}>
         <View style={styles.legendItem}>
-          <View style={[styles.legendSquare, styles.todayLegendSquare]} />
-          <Text style={styles.legendText}>Today</Text>
-        </View>
-        <View style={styles.legendItem}>
-          <View style={[styles.legendSquare, styles.presentLegendSquare]} />
+          <View style={[styles.legendSquare, styles.presentLegendSquare]}>
+            {showIcons && (
+              <MaterialIcons name="check" size={12} color="#10b981" />
+            )}
+          </View>
           <Text style={styles.legendText}>Present</Text>
         </View>
         <View style={styles.legendItem}>
-          <View style={[styles.legendSquare, styles.absentLegendSquare]} />
+          <View style={[styles.legendSquare, styles.absentLegendSquare]}>
+            {showIcons && (
+              <MaterialIcons name="close" size={12} color="#ef4444" />
+            )}
+          </View>
           <Text style={styles.legendText}>Absent</Text>
         </View>
       </View>
@@ -291,6 +298,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 6,
   },
+  icon: {
+    position: "absolute",
+    bottom: 2,
+  },
   legend: {
     flexDirection: "row",
     justifyContent: "center",
@@ -307,6 +318,8 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 4,
+    alignItems: "center",
+    justifyContent: "center",
   },
   todayLegendSquare: {
     backgroundColor: Colors.primary["600"],
