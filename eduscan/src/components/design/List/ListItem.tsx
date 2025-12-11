@@ -51,10 +51,10 @@ const ListItem = ({
 
   let content = (
     <View style={styles.container}>
-      <CheckMark variant={variant}></CheckMark>
       {icon && <Icons style={styles.icon} name={icon} color={iconColor} size={24} />}
       {textContent}
       {right && <ThemedText style={[styles.right, color && { color }]}>{right}</ThemedText>}
+      <CheckMark variant={variant}></CheckMark>
     </View>
   );
 
@@ -71,28 +71,45 @@ const ListItem = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
+    width: "90%",
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: Spacing.md,
+    alignSelf: "center",
+    paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     backgroundColor: Colors.white,
+    borderRadius: 12,
+    marginVertical: Spacing.sm,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
+    elevation: 2,
   },
   containerText: {
     flex: 1,
   },
-  title: {},
+  title: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: Colors.text,
+  },
   titleFlex: {
     flex: 1,
+    fontSize: 16,
+    fontWeight: "500",
+    color: Colors.text,
   },
   description: {
-    color: Colors.gray["500"],
+    fontSize: 14,
+    color: Colors.gray["400"],
+    marginTop: 2,
   },
   right: {
     marginLeft: "auto",
+    marginRight: Spacing.sm,
   },
   icon: {
-    marginLeft: Spacing.xs,
     marginRight: Spacing.md,
   },
 });
