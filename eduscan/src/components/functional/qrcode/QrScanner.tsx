@@ -106,7 +106,7 @@ export default function QrScanner() {
             {scanned ? 'Processing...' : 'Scan QR Code'}
           </Text>
           <Text style={styles.subText}>
-            {scanned ? 'Please wait' : 'Align the QR code within the frame'}
+            {scanned ? 'Please wait' : ''}
           </Text>
         </View>
 
