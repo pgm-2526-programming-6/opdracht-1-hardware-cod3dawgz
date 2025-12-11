@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, Text, View, ActivityIndicator, Alert } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
+import * as Progress from 'react-native-progress';
 import { API } from "@core/network/supabase/api"; 
 import useUser from '@functional/auth/useUser';
+import { Colors } from '../../../style/theme';
 
 const generateQrPayload = (profileId: string): string => {
   const timestamp = new Date().toISOString(); 
@@ -87,6 +89,9 @@ const QrGenerator: React.FC = () => {
     return <Text style={styles.errorText}>Geen toegang: Profiel niet gevonden.</Text>;
   }
 
+  const progress = 1 - (refreshTimer / 30)
+  
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Scan This Code</Text>
@@ -98,6 +103,16 @@ const QrGenerator: React.FC = () => {
             ecl="H"
             color="#000000" 
             backgroundColor="#FFFFFF"
+        />
+      </View>
+      <View style={styles.progressBox}>
+        <Progress.Bar
+          progress={progress}
+          color={Colors.primary["500"]}
+          unfilledColor={Colors.gray["200"]}
+          borderWidth={0}
+          height={10}
+          width={240}
         />
       </View>
       
@@ -152,5 +167,10 @@ const styles = StyleSheet.create({
     color: '#888888',
     textAlign: 'center',
     marginTop: 30,
+  },
+  progressBox: {
+    marginTop: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
