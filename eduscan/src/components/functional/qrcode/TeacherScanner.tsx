@@ -7,17 +7,14 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 interface TeacherScannerProps {
     teacherId: string;
 }
-
-const TeacherScanner: React.FC<TeacherScannerProps> = ({ teacherId }) => {
+const TeacherScanner = ({ teacherId }: TeacherScannerProps) => {
   const [permission, requestPermission] = useCameraPermissions();
-
-  const isPermissionGranted = Boolean(permission?.granted);
-
+  
   if (!permission) {
     return <Text style={styles.errorText}>Camera rechten controleren...</Text>;
   }
   
-  if (!isPermissionGranted) {
+  if (!permission.granted) {
     return (
       <View style={styles.container}>
         <MaterialIcons name="warning-amber" size={128} color='#ffa550' />

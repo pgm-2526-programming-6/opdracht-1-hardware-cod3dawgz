@@ -1,60 +1,13 @@
 import { CameraView, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
 import { useState } from 'react';
 import { Button, StyleSheet, Text, View, Alert } from 'react-native';
-import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { Colors, Spacing } from '@style/theme';
 
-
-const MOCK_CAMPUS_ID = 'campus-1';
-const MOCK_CLASS_ID = 'class-101';
-
-const MOCK_STUDENT_USER_ID = '1';
-const MOCK_TEACHER_USER_ID = '2';
-
-const MOCK_CLASS = {
-  id: MOCK_CLASS_ID,
-  name: "Advanced React Native Development",
-};
-
-const MOCK_PROFILES = [
-  {
-    id: 'profile-t2',
-    user_id: MOCK_TEACHER_USER_ID,
-    email: "professor.a@school.edu",
-    name: "Dr. Alice Smith (Teacher)",
-    is_teacher: true,
-    class_id: null,
-  },
-  {
-    id: 'profile-s1',
-    user_id: MOCK_STUDENT_USER_ID,
-    email: "student.b@school.edu",
-    name: "Bob Johnson (Student)",
-    is_teacher: false,
-    class_id: MOCK_CLASS_ID,
-  },
-];
-
-
-
 export default function QrScanner() {
-  const [permission, requestPermission] = useCameraPermissions();
   
   const [scanned, setScanned] = useState(false); 
 
-  if (!permission) {
-    return <View />;
-  }
-
-  if (!permission.granted) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.message}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="grant permission" />
-      </View>
-    );
-  }
 
   const handleBarCodeScanned = async ({ data }: BarcodeScanningResult) => {
 
