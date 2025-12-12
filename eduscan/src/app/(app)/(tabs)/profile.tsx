@@ -38,7 +38,7 @@ export default function ProfilePage() {
     return (
         <DefaultView padding={false}>
             <View style={styles.container}>
-                <ThemedText style={styles.header}>Profile</ThemedText>
+                <ThemedText style={styles.header}>Your Profile</ThemedText>
                 
                 <View style={styles.avatarContainer}>
                     <View style={[styles.avatar, { backgroundColor: avatarColor }]}>
