@@ -71,19 +71,8 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIc
     
     let dayCounter = 1;
     let currentDayOfWeek = firstDay; 
-
-    let totalWeekdays = 0;
-    let tempDay = 1;
-    let tempDayOfWeek = firstDay;
-    while (tempDay <= daysInMonth) {
-      if (tempDayOfWeek !== 0 && tempDayOfWeek !== 6) {
-        totalWeekdays++;
-      }
-      tempDay++;
-      tempDayOfWeek = (tempDayOfWeek + 1) % 7;
-    }
     
-    const rows = Math.ceil((adjustedFirstDay >= 0 ? adjustedFirstDay : 0) + totalWeekdays / 5);
+    const rows = 5;
 
     for (let row = 0; row < rows; row++) {
       const week = [];
