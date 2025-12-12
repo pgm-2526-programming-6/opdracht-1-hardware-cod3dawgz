@@ -17,6 +17,8 @@ export default function QrScanner() {
   });
 
   const handleQrCodeScanned = async ({ data }: BarcodeScanningResult) => {
+    if (!scanned) setScanned(true);
+    
     try {
       const jsonData = JSON.parse(data);
 
