@@ -1,6 +1,10 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Colors, Spacing, FontSizes, Fonts } from "@style/theme";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useState } from "react";
+import MaterialIconButton from "@design/Button/MaterialIconButton";
+import Legend from "@design/Legend/Legend";
+import LegendItem from "@design/Legend/LegendItem";
 
 type AttendanceCalendarProps = {
   attendanceDates: string[];
@@ -16,8 +20,25 @@ const MONTHS = [
 
 const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIcons = false }: AttendanceCalendarProps) => {
   const today = new Date();
-  const year = currentMonth.getFullYear();
-  const month = currentMonth.getMonth();
+  const [displayMonth, setDisplayMonth] = useState(currentMonth);
+  
+  const year = displayMonth.getFullYear();
+  const month = displayMonth.getMonth();
+  const currentYear = today.getFullYear();
+
+  const goToPreviousMonth = () => {
+    setDisplayMonth(new Date(year, month - 1, 1));
+  };
+
+  const goToNextMonth = () => {
+    setDisplayMonth(new Date(year, month + 1, 1));
+  };
+
+  const goToCurrentMonth = () => {
+    setDisplayMonth(new Date());
+  };
+
+  const isCurrentMonth = year === currentYear && month === today.getMonth();
 
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -55,35 +76,34 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIc
   const renderCalendarDays = () => {
     const days = [];
 
-    const adjustedFirstDay = firstDay === 0 || firstDay === 6 ? -1 : firstDay - 1;
-    
-    let dayCounter = 1;
-    let currentDayOfWeek = firstDay; 
-
-    let totalWeekdays = 0;
-    let tempDay = 1;
-    let tempDayOfWeek = firstDay;
-    while (tempDay <= daysInMonth) {
-      if (tempDayOfWeek !== 0 && tempDayOfWeek !== 6) {
-        totalWeekdays++;
-      }
-      tempDay++;
-      tempDayOfWeek = (tempDayOfWeek + 1) % 7;
+    let firstWeekday = 1;
+    let firstWeekdayOfWeek = firstDay;
+    while (firstWeekdayOfWeek === 0 || firstWeekdayOfWeek === 6) {
+      firstWeekday++;
+      firstWeekdayOfWeek = new Date(year, month, firstWeekday).getDay();
     }
+
+    const firstColumnOffset = firstWeekdayOfWeek === 0 ? -1 : firstWeekdayOfWeek - 1;
     
-    const rows = Math.ceil((adjustedFirstDay >= 0 ? adjustedFirstDay : 0) + totalWeekdays / 5);
+    let dayCounter = firstWeekday;
+    const rows = 5;
 
     for (let row = 0; row < rows; row++) {
       const week = [];
       for (let col = 0; col < 5; col++) {
         const index = row * 5 + col;
 
-        if ((row === 0 && adjustedFirstDay >= 0 && col < adjustedFirstDay) || dayCounter > daysInMonth) {
+        if ((row === 0 && col < firstColumnOffset) || dayCounter > daysInMonth) {
           week.push(<View key={`empty-${index}`} style={styles.dayCell} />);
-        } else if (dayCounter <= daysInMonth) {
+        } else {
+
+          let currentDate = new Date(year, month, dayCounter);
+          let currentDayOfWeek = currentDate.getDay();
+          
           while (dayCounter <= daysInMonth && (currentDayOfWeek === 0 || currentDayOfWeek === 6)) {
             dayCounter++;
-            currentDayOfWeek = (currentDayOfWeek + 1) % 7;
+            currentDate = new Date(year, month, dayCounter);
+            currentDayOfWeek = currentDate.getDay();
           }
           
           if (dayCounter <= daysInMonth) {
@@ -134,7 +154,8 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIc
               </View>
             );
             dayCounter++;
-            currentDayOfWeek = (currentDayOfWeek + 1) % 7;
+          } else {
+            week.push(<View key={`empty-${index}`} style={styles.dayCell} />);
           }
         }
       }
@@ -153,9 +174,25 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIc
 
   return (
     <View style={styles.container}>
-      <Text style={styles.monthText}>
-        {MONTHS[month]} {year}
-      </Text>
+      <View style={styles.monthHeader}>
+        <MaterialIconButton 
+          icon="chevron-left" 
+          label="Previous month" 
+          size={28} 
+          color={Colors.text}
+          onPress={goToPreviousMonth}
+        />
+        <Text style={styles.monthText}>
+          {MONTHS[month]}{year !== currentYear ? ` ${year}` : ''}
+        </Text>
+        <MaterialIconButton 
+          icon="chevron-right" 
+          label="Next month" 
+          size={28} 
+          color={Colors.text}
+          onPress={goToNextMonth}
+        />
+      </View>
 
       <View style={styles.calendarCard}>
 
@@ -170,24 +207,27 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIc
         {renderCalendarDays()}
       </View>
 
-      <View style={styles.legend}>
-        <View style={styles.legendItem}>
-          <View style={[styles.legendSquare, styles.presentLegendSquare]}>
-            {showIcons && (
-              <MaterialIcons name="check" size={12} color="#10b981" />
-            )}
-          </View>
-          <Text style={styles.legendText}>Present</Text>
-        </View>
-        <View style={styles.legendItem}>
-          <View style={[styles.legendSquare, styles.absentLegendSquare]}>
-            {showIcons && (
-              <MaterialIcons name="close" size={12} color="#ef4444" />
-            )}
-          </View>
-          <Text style={styles.legendText}>Absent</Text>
-        </View>
-      </View>
+      <Legend>
+        <LegendItem
+          label="Present"
+          backgroundColor="#d1fae5"
+          borderColor="#6ee7b7"
+          icon={showIcons ? <MaterialIcons name="check" size={12} color="#10b981" /> : undefined}
+        />
+        <LegendItem
+          label="Absent"
+          backgroundColor="#fee2e2"
+          borderColor="#fca5a5"
+          icon={showIcons ? <MaterialIcons name="close" size={12} color="#ef4444" /> : undefined}
+        />
+      </Legend>
+
+      {!isCurrentMonth && (
+        <TouchableOpacity onPress={goToCurrentMonth} style={styles.todayButton}>
+          <MaterialIcons name="today" size={16} color={Colors.white} />
+          <Text style={styles.todayButtonText}>Current Month</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -197,11 +237,19 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
   },
+  monthHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: Spacing.lg,
+    gap: Spacing.md,
+  },
   monthText: {
     fontSize: FontSizes.xl,
     fontFamily: Fonts.semiBold,
     color: Colors.text,
-    marginBottom: Spacing.lg,
+    minWidth: 140,
+    textAlign: "center",
   },
   calendarCard: {
     backgroundColor: Colors.white,
@@ -302,42 +350,22 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 2,
   },
-  legend: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: Spacing.xl,
-    gap: Spacing.xl,
-  },
-  legendItem: {
+  todayButton: {
     flexDirection: "row",
     alignItems: "center",
-    gap: Spacing.xs,
-  },
-  legendSquare: {
-    width: 20,
-    height: 20,
-    borderRadius: 4,
-    alignItems: "center",
     justifyContent: "center",
-  },
-  todayLegendSquare: {
     backgroundColor: Colors.primary["600"],
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: 20,
+    marginTop: Spacing.lg,
+    gap: Spacing.xs,
+    alignSelf: "center",
   },
-  presentLegendSquare: {
-    backgroundColor: "#d1fae5",
-    borderWidth: 2,
-    borderColor: "#6ee7b7",
-  },
-  absentLegendSquare: {
-    backgroundColor: "#fee2e2",
-    borderWidth: 2,
-    borderColor: "#fca5a5",
-  },
-  legendText: {
-    fontSize: FontSizes.default,
-    fontFamily: Fonts.regular,
-    color: Colors.gray["700"],
+  todayButtonText: {
+    color: Colors.white,
+    fontSize: FontSizes.sm,
+    fontFamily: Fonts.semiBold,
   },
 });
 
