@@ -31,6 +31,12 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIc
     setDisplayMonth(new Date(year, month + 1, 1));
   };
 
+  const goToCurrentMonth = () => {
+    setDisplayMonth(new Date());
+  };
+
+  const isCurrentMonth = year === currentYear && month === today.getMonth();
+
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
@@ -67,11 +73,18 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIc
   const renderCalendarDays = () => {
     const days = [];
 
-    const adjustedFirstDay = firstDay === 0 || firstDay === 6 ? -1 : firstDay - 1;
+    // Find first weekday of the month
+    let firstWeekday = 1;
+    let firstWeekdayOfWeek = firstDay;
+    while (firstWeekdayOfWeek === 0 || firstWeekdayOfWeek === 6) {
+      firstWeekday++;
+      firstWeekdayOfWeek = new Date(year, month, firstWeekday).getDay();
+    }
+
+    // Calculate which column the first weekday should appear in (0-4 for Mon-Fri)
+    const firstColumnOffset = firstWeekdayOfWeek === 0 ? -1 : firstWeekdayOfWeek - 1;
     
-    let dayCounter = 1;
-    let currentDayOfWeek = firstDay; 
-    
+    let dayCounter = firstWeekday;
     const rows = 5;
 
     for (let row = 0; row < rows; row++) {
@@ -79,12 +92,18 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIc
       for (let col = 0; col < 5; col++) {
         const index = row * 5 + col;
 
-        if ((row === 0 && adjustedFirstDay >= 0 && col < adjustedFirstDay) || dayCounter > daysInMonth) {
+        // Add empty cells before first day or after last day
+        if ((row === 0 && col < firstColumnOffset) || dayCounter > daysInMonth) {
           week.push(<View key={`empty-${index}`} style={styles.dayCell} />);
-        } else if (dayCounter <= daysInMonth) {
+        } else {
+          // Skip weekends
+          let currentDate = new Date(year, month, dayCounter);
+          let currentDayOfWeek = currentDate.getDay();
+          
           while (dayCounter <= daysInMonth && (currentDayOfWeek === 0 || currentDayOfWeek === 6)) {
             dayCounter++;
-            currentDayOfWeek = (currentDayOfWeek + 1) % 7;
+            currentDate = new Date(year, month, dayCounter);
+            currentDayOfWeek = currentDate.getDay();
           }
           
           if (dayCounter <= daysInMonth) {
@@ -135,7 +154,9 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIc
               </View>
             );
             dayCounter++;
-            currentDayOfWeek = (currentDayOfWeek + 1) % 7;
+          } else {
+            // If we've run out of days, add empty cell
+            week.push(<View key={`empty-${index}`} style={styles.dayCell} />);
           }
         }
       }
@@ -197,6 +218,13 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIc
           <Text style={styles.legendText}>Absent</Text>
         </View>
       </View>
+
+      {!isCurrentMonth && (
+        <TouchableOpacity onPress={goToCurrentMonth} style={styles.todayButton}>
+          <MaterialIcons name="today" size={16} color={Colors.white} />
+          <Text style={styles.todayButtonText}>Current Month</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -359,6 +387,23 @@ const styles = StyleSheet.create({
     fontSize: FontSizes.default,
     fontFamily: Fonts.regular,
     color: Colors.gray["700"],
+  },
+  todayButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.primary["600"],
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: 20,
+    marginTop: Spacing.lg,
+    gap: Spacing.xs,
+    alignSelf: "center",
+  },
+  todayButtonText: {
+    color: Colors.white,
+    fontSize: FontSizes.sm,
+    fontFamily: Fonts.semiBold,
   },
 });
 
