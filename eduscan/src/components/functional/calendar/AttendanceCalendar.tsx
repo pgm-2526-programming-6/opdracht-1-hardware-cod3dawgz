@@ -2,6 +2,9 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Colors, Spacing, FontSizes, Fonts } from "@style/theme";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useState } from "react";
+import MaterialIconButton from "@design/Button/MaterialIconButton";
+import Legend from "@design/Legend/Legend";
+import LegendItem from "@design/Legend/LegendItem";
 
 type AttendanceCalendarProps = {
   attendanceDates: string[];
@@ -73,7 +76,6 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIc
   const renderCalendarDays = () => {
     const days = [];
 
-    // Find first weekday of the month
     let firstWeekday = 1;
     let firstWeekdayOfWeek = firstDay;
     while (firstWeekdayOfWeek === 0 || firstWeekdayOfWeek === 6) {
@@ -81,7 +83,6 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIc
       firstWeekdayOfWeek = new Date(year, month, firstWeekday).getDay();
     }
 
-    // Calculate which column the first weekday should appear in (0-4 for Mon-Fri)
     const firstColumnOffset = firstWeekdayOfWeek === 0 ? -1 : firstWeekdayOfWeek - 1;
     
     let dayCounter = firstWeekday;
@@ -92,11 +93,10 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIc
       for (let col = 0; col < 5; col++) {
         const index = row * 5 + col;
 
-        // Add empty cells before first day or after last day
         if ((row === 0 && col < firstColumnOffset) || dayCounter > daysInMonth) {
           week.push(<View key={`empty-${index}`} style={styles.dayCell} />);
         } else {
-          // Skip weekends
+
           let currentDate = new Date(year, month, dayCounter);
           let currentDayOfWeek = currentDate.getDay();
           
@@ -155,7 +155,6 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIc
             );
             dayCounter++;
           } else {
-            // If we've run out of days, add empty cell
             week.push(<View key={`empty-${index}`} style={styles.dayCell} />);
           }
         }
@@ -176,15 +175,23 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIc
   return (
     <View style={styles.container}>
       <View style={styles.monthHeader}>
-        <TouchableOpacity onPress={goToPreviousMonth} style={styles.navButton}>
-          <MaterialIcons name="chevron-left" size={28} color={Colors.text} />
-        </TouchableOpacity>
+        <MaterialIconButton 
+          icon="chevron-left" 
+          label="Previous month" 
+          size={28} 
+          color={Colors.text}
+          onPress={goToPreviousMonth}
+        />
         <Text style={styles.monthText}>
           {MONTHS[month]}{year !== currentYear ? ` ${year}` : ''}
         </Text>
-        <TouchableOpacity onPress={goToNextMonth} style={styles.navButton}>
-          <MaterialIcons name="chevron-right" size={28} color={Colors.text} />
-        </TouchableOpacity>
+        <MaterialIconButton 
+          icon="chevron-right" 
+          label="Next month" 
+          size={28} 
+          color={Colors.text}
+          onPress={goToNextMonth}
+        />
       </View>
 
       <View style={styles.calendarCard}>
@@ -200,24 +207,20 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIc
         {renderCalendarDays()}
       </View>
 
-      <View style={styles.legend}>
-        <View style={styles.legendItem}>
-          <View style={[styles.legendSquare, styles.presentLegendSquare]}>
-            {showIcons && (
-              <MaterialIcons name="check" size={12} color="#10b981" />
-            )}
-          </View>
-          <Text style={styles.legendText}>Present</Text>
-        </View>
-        <View style={styles.legendItem}>
-          <View style={[styles.legendSquare, styles.absentLegendSquare]}>
-            {showIcons && (
-              <MaterialIcons name="close" size={12} color="#ef4444" />
-            )}
-          </View>
-          <Text style={styles.legendText}>Absent</Text>
-        </View>
-      </View>
+      <Legend>
+        <LegendItem
+          label="Present"
+          backgroundColor="#d1fae5"
+          borderColor="#6ee7b7"
+          icon={showIcons ? <MaterialIcons name="check" size={12} color="#10b981" /> : undefined}
+        />
+        <LegendItem
+          label="Absent"
+          backgroundColor="#fee2e2"
+          borderColor="#fca5a5"
+          icon={showIcons ? <MaterialIcons name="close" size={12} color="#ef4444" /> : undefined}
+        />
+      </Legend>
 
       {!isCurrentMonth && (
         <TouchableOpacity onPress={goToCurrentMonth} style={styles.todayButton}>
@@ -240,10 +243,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginBottom: Spacing.lg,
     gap: Spacing.md,
-  },
-  navButton: {
-    padding: Spacing.xs,
-    borderRadius: 8,
   },
   monthText: {
     fontSize: FontSizes.xl,
@@ -350,43 +349,6 @@ const styles = StyleSheet.create({
   icon: {
     position: "absolute",
     bottom: 2,
-  },
-  legend: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: Spacing.xl,
-    gap: Spacing.xl,
-  },
-  legendItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.xs,
-  },
-  legendSquare: {
-    width: 20,
-    height: 20,
-    borderRadius: 4,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  todayLegendSquare: {
-    backgroundColor: Colors.primary["600"],
-  },
-  presentLegendSquare: {
-    backgroundColor: "#d1fae5",
-    borderWidth: 2,
-    borderColor: "#6ee7b7",
-  },
-  absentLegendSquare: {
-    backgroundColor: "#fee2e2",
-    borderWidth: 2,
-    borderColor: "#fca5a5",
-  },
-  legendText: {
-    fontSize: FontSizes.default,
-    fontFamily: Fonts.regular,
-    color: Colors.gray["700"],
   },
   todayButton: {
     flexDirection: "row",
