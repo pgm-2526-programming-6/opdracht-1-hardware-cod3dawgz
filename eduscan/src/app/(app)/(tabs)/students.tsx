@@ -11,16 +11,19 @@ import { FlatList, View, TextInput, StyleSheet, TouchableOpacity } from "react-n
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Colors, Spacing, FontSizes, Fonts } from "@style/theme";
 import ThemedText from "@design/Typography/ThemedText";
-
 import { getProfiles } from "@core/modules/profiles/api.profiles";
 import { Profile } from "@core/modules/profiles/types.profiles";
 import { useState } from "react";
+import useRemoveAttendance from "@functional/attendance/useRemoveAttendance";
 
 type FilterStatus = "all" | "present" | "absent";
 
 export default function AttendancesPage() {
   const user = useUser();
   const userId = user?.id;
+
+  const removeAttendance = useRemoveAttendance(userId);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
 
@@ -79,6 +82,7 @@ export default function AttendancesPage() {
       (att) => att.student.id === student.id
     );
     return {
+      id: attendance?.id,
       student: student,
       status: attendance ? "success" : "error",
       campus: attendance ? attendance.campus : null,
@@ -168,7 +172,7 @@ export default function AttendancesPage() {
               : undefined}
             variant={item.status}
             description={item.campus ? `campus: ${item.campus.name}` : ""}
-            onPress={() => {}}
+            onPress={() => {if (item.status === "success" && item.id) { removeAttendance(item.id) }}}
           />
         )}
       />

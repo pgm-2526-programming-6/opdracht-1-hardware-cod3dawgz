@@ -47,3 +47,12 @@ export const checkAttendanceExists = async (profileId: string, date: Date) => {
   return data.length > 0;
 }
 
+export const removeAttendanceById = async (attendanceId: number) => {
+  const { error } = await API.from("attendances")
+    .delete()
+    .eq("id", attendanceId)
+    .throwOnError();
+    
+  return error;
+
+}
