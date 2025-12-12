@@ -1,6 +1,7 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Colors, Spacing, FontSizes, Fonts } from "@style/theme";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useState } from "react";
 
 type AttendanceCalendarProps = {
   attendanceDates: string[];
@@ -16,8 +17,19 @@ const MONTHS = [
 
 const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIcons = false }: AttendanceCalendarProps) => {
   const today = new Date();
-  const year = currentMonth.getFullYear();
-  const month = currentMonth.getMonth();
+  const [displayMonth, setDisplayMonth] = useState(currentMonth);
+  
+  const year = displayMonth.getFullYear();
+  const month = displayMonth.getMonth();
+  const currentYear = today.getFullYear();
+
+  const goToPreviousMonth = () => {
+    setDisplayMonth(new Date(year, month - 1, 1));
+  };
+
+  const goToNextMonth = () => {
+    setDisplayMonth(new Date(year, month + 1, 1));
+  };
 
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -153,9 +165,17 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIc
 
   return (
     <View style={styles.container}>
-      <Text style={styles.monthText}>
-        {MONTHS[month]} {year}
-      </Text>
+      <View style={styles.monthHeader}>
+        <TouchableOpacity onPress={goToPreviousMonth} style={styles.navButton}>
+          <MaterialIcons name="chevron-left" size={28} color={Colors.text} />
+        </TouchableOpacity>
+        <Text style={styles.monthText}>
+          {MONTHS[month]}{year !== currentYear ? ` ${year}` : ''}
+        </Text>
+        <TouchableOpacity onPress={goToNextMonth} style={styles.navButton}>
+          <MaterialIcons name="chevron-right" size={28} color={Colors.text} />
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.calendarCard}>
 
@@ -197,11 +217,23 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
   },
+  monthHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: Spacing.lg,
+    gap: Spacing.md,
+  },
+  navButton: {
+    padding: Spacing.xs,
+    borderRadius: 8,
+  },
   monthText: {
     fontSize: FontSizes.xl,
     fontFamily: Fonts.semiBold,
     color: Colors.text,
-    marginBottom: Spacing.lg,
+    minWidth: 140,
+    textAlign: "center",
   },
   calendarCard: {
     backgroundColor: Colors.white,
