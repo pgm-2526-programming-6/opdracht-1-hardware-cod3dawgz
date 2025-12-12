@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import {
   startGeofencing,
   stopGeofencing,
@@ -8,8 +8,6 @@ import {
 } from "@functional/location/geofencing";
 import useLocation from "@functional/location/location";
 import QrGenerator from "./QrGenerator";
-import { Colors, Spacing, FontSizes, Fonts } from "@style/theme";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import EmptyView from "@design/View/EmptyView";
 
 export default function StudentQrCode() {
@@ -30,8 +28,6 @@ export default function StudentQrCode() {
     initGeofencing();
 
     const unsubscribeEnter = onGeofenceEnter((region) => {
-    //console.log("entered:", region.identifier);
-
     setActiveCampuses(prev => {
       const updated = new Set(prev);
       updated.add(region.identifier || '');
@@ -40,8 +36,6 @@ export default function StudentQrCode() {
   });
 
   const unsubscribeExit = onGeofenceExit((region) => {
-    //console.log("Exited:", region.identifier);
-
     setActiveCampuses(prev => {
       const updated = new Set(prev);
       updated.delete(region.identifier || '');
