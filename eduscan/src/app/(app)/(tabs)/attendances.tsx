@@ -7,8 +7,10 @@ import DefaultView from "@design/View/DefaultView";
 import EmptyView from "@design/View/EmptyView";
 import AttendanceCalendar from "@functional/calendar/AttendanceCalendar";
 import { useQuery } from "@tanstack/react-query";
-import { ScrollView } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import { useColorBlindMode } from "@core/utils/ColorBlindModeContext";
+import ThemedText from "@design/Typography/ThemedText";
+import { Colors, Spacing } from "@style/theme";
 
 export default function AttendancesPage() {
 
@@ -60,8 +62,19 @@ export default function AttendancesPage() {
   return (
     <DefaultView>
       <ScrollView showsVerticalScrollIndicator={false}>
+        <ThemedText style={styles.header}>Your Attendances</ThemedText>
         <AttendanceCalendar attendanceDates={attendanceDates} showIcons={isColorBlindMode} />
       </ScrollView>
     </DefaultView>
   );
 };
+
+const styles = StyleSheet.create({
+    header: {
+        fontSize: 24,
+        fontWeight: "600",
+        textAlign: 'center',
+        color: Colors.text,
+        marginBottom: Spacing.xl,
+    }
+});

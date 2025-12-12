@@ -1,22 +1,31 @@
 import { CameraView, BarcodeScanningResult } from "expo-camera";
 import { useState } from "react";
-import { StyleSheet, Text, View, Alert } from "react-native";
+import { StyleSheet, Text, View, Alert, Button } from "react-native";
 import * as Haptics from "expo-haptics";
 import { Colors, Spacing } from "@style/theme";
 import { createAttendance, checkAttendanceExists } from "@core/modules/attendances/api.attendances";
 import { useMutation } from "@tanstack/react-query";
 import { AttendanceInsert } from "@core/modules/attendances/types.attendances";
 import useUser from "@functional/auth/useUser";
+import { useAudioPlayer } from 'expo-audio';
+
+const audioAccept = require('@assets/sfx/accept_sfx.mp3');
+const audioError = require('@assets/sfx/error_sfx.mp3');
 
 export default function QrScanner() {
   const [scanned, setScanned] = useState(false);
   const user = useUser();
+
+  const acceptSound = useAudioPlayer(audioAccept);
+  const errorSound = useAudioPlayer(audioError);
 
   const attendanceMutation = useMutation({
     mutationFn: createAttendance,
   });
 
   const handleQrCodeScanned = async ({ data }: BarcodeScanningResult) => {
+    if (!scanned) setScanned(true);
+
     try {
       const jsonData = JSON.parse(data);
 
@@ -47,6 +56,8 @@ export default function QrScanner() {
 
       await attendanceMutation.mutateAsync(attendanceData);
 
+      acceptSound.seekTo(0);
+      acceptSound.play();
       await Haptics.notificationAsync(
         Haptics.NotificationFeedbackType.Success
       );
@@ -56,6 +67,8 @@ export default function QrScanner() {
       ]);
     } catch (error) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      errorSound.seekTo(0);
+      errorSound.play();
       Alert.alert("Error", `${error}`, [
         { text: "OK", onPress: () => setScanned(false) },
       ]);

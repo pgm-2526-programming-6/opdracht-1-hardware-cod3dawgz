@@ -94,10 +94,9 @@ const QrGenerator = ({ campusId }: QrGeneratorProps) => {
 
   const progress = 1 - (refreshTimer / 30)
   
-
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Scan This Code</Text>
+      <Text style={styles.header}>Show this to your Teacher</Text>
       
       <View style={styles.qrCodeBox}>
         <QRCode 

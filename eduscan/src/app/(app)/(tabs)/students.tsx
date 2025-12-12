@@ -98,8 +98,15 @@ export default function AttendancesPage() {
       (filterStatus === "present" && item.status === "success") ||
       (filterStatus === "absent" && item.status === "error");
 
-    return matchesSearch && matchesStatus;
-  });
+      
+      return matchesSearch && matchesStatus;
+    });
+
+    const sortedStudents = filteredStudents.sort((a, b) => {
+      const nameA = `${a.student.first_name} ${a.student.last_name}`.toLowerCase();
+      const nameB = `${b.student.first_name} ${b.student.last_name}`.toLowerCase();
+      return nameA.localeCompare(nameB);
+    });
 
   if (studentAttendanceStatus.length === 0) {
     return (
@@ -158,7 +165,7 @@ export default function AttendancesPage() {
       </View>
 
       <FlatList
-        data={filteredStudents}
+        data={sortedStudents}
         keyExtractor={(item) => item.student.id}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>

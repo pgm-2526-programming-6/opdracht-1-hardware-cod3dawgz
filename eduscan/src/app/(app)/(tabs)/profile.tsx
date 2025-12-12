@@ -38,7 +38,7 @@ export default function ProfilePage() {
     return (
         <DefaultView padding={false}>
             <View style={styles.container}>
-                <ThemedText style={styles.header}>Profile</ThemedText>
+                <ThemedText style={styles.header}>Your Profile</ThemedText>
                 
                 <View style={styles.avatarContainer}>
                     <View style={[styles.avatar, { backgroundColor: avatarColor }]}>
@@ -80,8 +80,8 @@ export default function ProfilePage() {
                     </TouchableOpacity>
                 )}
 
-                <Button onPress={() => logout()} style={styles.logoutButton}>Log out</Button>
-                
+                <Button onPress={() => logout()} >Log out</Button>
+                    
             </View>
         </DefaultView>
     );
@@ -168,8 +168,5 @@ const styles = StyleSheet.create({
     settingDescription: {
         fontSize: 12,
         color: Colors.gray["500"],
-    },
-    logoutButton: {
-        marginTop: Spacing.xl,
     },
 });

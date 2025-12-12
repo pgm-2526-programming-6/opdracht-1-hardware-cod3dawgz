@@ -26,6 +26,11 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIc
   const month = displayMonth.getMonth();
   const currentYear = today.getFullYear();
 
+  const isNextMonthInFuture =
+    year > today.getFullYear() ||
+    (year === today.getFullYear() && month >= today.getMonth());
+
+
   const goToPreviousMonth = () => {
     setDisplayMonth(new Date(year, month - 1, 1));
   };
@@ -189,8 +194,9 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIc
           icon="chevron-right" 
           label="Next month" 
           size={28} 
-          color={Colors.text}
-          onPress={goToNextMonth}
+          color={isNextMonthInFuture ? Colors.gray["400"] : Colors.text}
+          onPress={isNextMonthInFuture ? undefined : goToNextMonth}
+          disabled={isNextMonthInFuture}
         />
       </View>
 
@@ -225,7 +231,7 @@ const AttendanceCalendar = ({ attendanceDates, currentMonth = new Date(), showIc
       {!isCurrentMonth && (
         <TouchableOpacity onPress={goToCurrentMonth} style={styles.todayButton}>
           <MaterialIcons name="today" size={16} color={Colors.white} />
-          <Text style={styles.todayButtonText}>Current Month</Text>
+          <Text style={styles.todayButtonText}>Go to Current Month</Text>
         </TouchableOpacity>
       )}
     </View>
