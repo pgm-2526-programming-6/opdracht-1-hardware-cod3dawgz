@@ -45,7 +45,6 @@ export const getCurrentAuth = async (): Promise<Auth | null> => {
 };
 
 export const login = async ({ email, password }: LoginBody): Promise<Auth> => {
-  // 1. Inloggen bij Supabase
   const { data, error } = await API.auth.signInWithPassword({
     email,
     password,
@@ -59,7 +58,6 @@ export const login = async ({ email, password }: LoginBody): Promise<Auth> => {
     throw new Error("User not found after login");
   }
 
-  // 2. Ook profile informatie opvragen
   const auth = await getCurrentAuth();
 
   if (!auth) {

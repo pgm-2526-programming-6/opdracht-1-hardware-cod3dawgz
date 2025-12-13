@@ -20,7 +20,7 @@ export default function AuthLayout() {
         <Stack.Screen
           name="register"
           options={{
-            title: "Create Account", // Optional
+            title: "Create Account",
           }}
         />
       </Stack>

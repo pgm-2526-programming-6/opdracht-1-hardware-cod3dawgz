@@ -4,7 +4,6 @@ import ErrorMessage from "@design/Alert/ErrorMessage";
 import Button from "@design/Button/Button";
 import TextButton from "@design/Button/TextButton";
 import InputField from "@design/Form/InputField";
-import Logo from "@design/Logo/Logo";
 import { useRouter } from "expo-router";
 import ThemedText from "@design/Typography/ThemedText";
 import DefaultView from "@design/View/DefaultView";
@@ -15,16 +14,15 @@ import { Controller, useForm } from "react-hook-form";
 import { ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as yup from "yup";
-import { useState } from "react";
 
 const schema = yup.object().shape({
-  first_name: yup.string().required("Voornaam is vereist"),
-  last_name: yup.string().required("Achternaam is vereist"),
-  email: yup.string().email("Ongeldig e-mailadres").required("E-mail is vereist"),
+  first_name: yup.string().required("First name is required"),
+  last_name: yup.string().required("Last name is required"),
+  email: yup.string().email("Invalid e-mail address").required("E=mail is required"),
   password: yup
     .string()
-    .min(8, "Wachtwoord moet minstens 8 karakters lang zijn")
-    .required("Wachtwoord is vereist"),
+    .min(8, "Password must be at least 8 characters")
+    .required("Password is required"),
 });
 
 const defaultValues = {
@@ -72,7 +70,6 @@ const Register = () => {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView keyboardShouldPersistTaps="always">
         <DefaultView>
-          <Logo style={styles.logo} />
 
           <ThemedText type="title" style={styles.title}>
             Create an account
@@ -85,7 +82,7 @@ const Register = () => {
             name="first_name"
             render={({ field: { onChange, value, onBlur } }) => (
               <InputField
-                label="Voornaam"
+                label="First name"
                 name="first_name"
                 placeholder="John"
                 autoComplete="given-name"
@@ -102,7 +99,7 @@ const Register = () => {
             name="last_name"
             render={({ field: { onChange, value, onBlur } }) => (
               <InputField
-                label="Achternaam"
+                label="Last name"
                 name="last_name"
                 placeholder="Doe"
                 autoComplete="family-name"
@@ -119,7 +116,7 @@ const Register = () => {
             name="email"
             render={({ field: { onChange, value, onBlur } }) => (
               <InputField
-                label="Email"
+                label="E-mail"
                 name="email"
                 placeholder="john@doe.com"
                 autoComplete="email"
@@ -137,7 +134,7 @@ const Register = () => {
             name="password"
             render={({ field: { onChange, value, onBlur } }) => (
               <InputField
-                label="Wachtwoord"
+                label="Password"
                 name="password"
                 secureTextEntry
                 onChangeText={onChange}
@@ -154,11 +151,11 @@ const Register = () => {
             style={styles.button}
             onPress={handleSubmit(handleRegister)}
           >
-            Registreren
+            Register
           </Button>
 
           <TextButton disabled={isPending} href="/(auth)/login">
-            Heb je al een account? Log in
+            Already have an account? Log in
           </TextButton>
         </DefaultView>
       </ScrollView>
@@ -178,11 +175,6 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
     marginBottom: Spacing.sm,
   },
-  logo: {
-    marginHorizontal: "auto",
-    marginTop: Spacing["5xl"],
-    marginBottom: Spacing["2xl"],
-  }
 });
 
 export default Register;

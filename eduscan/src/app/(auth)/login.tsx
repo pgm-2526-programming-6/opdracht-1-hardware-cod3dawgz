@@ -57,7 +57,7 @@ const Login = () => {
           <Logo style={styles.logo} />
 
           <ThemedText type="title" style={styles.title}>
-            Login met je account
+            Log into your account
           </ThemedText>
 
           {!!error && <ErrorMessage error={error} />}
@@ -67,7 +67,7 @@ const Login = () => {
             name="email"
             render={({ field: { onChange, value, onBlur } }) => (
               <InputField
-                label="Email"
+                label="E-mail"
                 name="email"
                 placeholder="john@doe.com"
                 autoComplete="email"
@@ -86,7 +86,7 @@ const Login = () => {
             name="password"
             render={({ field: { onChange, value, onBlur } }) => (
               <InputField
-                label="Wachtwoord"
+                label="Password"
                 name="password"
                 secureTextEntry
                 onChangeText={onChange}
@@ -103,7 +103,7 @@ const Login = () => {
           </Button>
 
           <TextButton disabled={isPending} href="/(auth)/register">
-            Register
+            No account yet? Register
           </TextButton>
         </DefaultView>
       </ScrollView>

@@ -1,15 +1,15 @@
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { ColorBlindModeProvider } from "@core/utils/ColorBlindModeContext";
+import { SettingsProvider } from "@core/utils/SettingsContext";
 
 const AppLayout = () => {
   return (
-    <ColorBlindModeProvider>
+    <SettingsProvider>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="light" />
-    </ColorBlindModeProvider>
+    </SettingsProvider>
   );
 };
 

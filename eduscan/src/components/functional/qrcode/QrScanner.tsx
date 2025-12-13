@@ -8,6 +8,8 @@ import { useMutation } from "@tanstack/react-query";
 import { AttendanceInsert } from "@core/modules/attendances/types.attendances";
 import useUser from "@functional/auth/useUser";
 import { useAudioPlayer } from 'expo-audio';
+import { useSettings } from "@core/utils/SettingsContext";
+
 
 const audioAccept = require('@assets/sfx/accept_sfx.mp3');
 const audioError = require('@assets/sfx/error_sfx.mp3');
@@ -15,9 +17,11 @@ const audioError = require('@assets/sfx/error_sfx.mp3');
 export default function QrScanner() {
   const [scanned, setScanned] = useState(false);
   const user = useUser();
-
+  
   const acceptSound = useAudioPlayer(audioAccept);
   const errorSound = useAudioPlayer(audioError);
+  
+  const { isSoundEnabled, isVibrationEnabled } = useSettings();
 
   const attendanceMutation = useMutation({
     mutationFn: createAttendance,
@@ -56,19 +60,31 @@ export default function QrScanner() {
 
       await attendanceMutation.mutateAsync(attendanceData);
 
-      acceptSound.seekTo(0);
-      acceptSound.play();
-      await Haptics.notificationAsync(
-        Haptics.NotificationFeedbackType.Success
-      );
+      if (isSoundEnabled) {
+        acceptSound.seekTo(0);
+        acceptSound.play();
+      }
+
+      if (isVibrationEnabled) {
+        await Haptics.notificationAsync(
+          Haptics.NotificationFeedbackType.Success
+        );
+      }
 
       Alert.alert("Attendance Recorded", "Attendance has been recorded", [
         { text: "OK", onPress: () => setScanned(false) },
       ]);
     } catch (error) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      errorSound.seekTo(0);
-      errorSound.play();
+      
+      if (isSoundEnabled) {
+        errorSound.seekTo(0);
+        errorSound.play();
+      }
+
+      if (isVibrationEnabled) {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
+      
       Alert.alert("Error", `${error}`, [
         { text: "OK", onPress: () => setScanned(false) },
       ]);

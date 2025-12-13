@@ -27,13 +27,9 @@ TaskManager.defineTask(LOCATION_GEOFENCING_TASK, async ({ data, error }) => {
     region: Location.LocationRegion;
   };
 
-  //console.log("Geofencing event:", eventType, region.identifier);
-
   if (eventType === Location.GeofencingEventType.Enter) {
-    //console.log(`You've entered region: ${region.identifier}`);
     onEnterCallbacks.forEach((callback) => callback(region));
   } else if (eventType === Location.GeofencingEventType.Exit) {
-    //console.log(`You've left region: ${region.identifier}`);
     onExitCallbacks.forEach((callback) => callback(region));
   }
 });
@@ -42,7 +38,6 @@ export async function initializeCampuses() {
   try {
     cachedCampuses = await getCampuses();
     campusMap = Object.fromEntries(cachedCampuses.map(campus => [String(campus.id), campus]));
-    //console.log("Campuses loaded:", cachedCampuses);
   } catch (error) {
     console.error("Error loading campuses:", error);
   }
@@ -62,7 +57,6 @@ export async function startGeofencing() {
       LOCATION_GEOFENCING_TASK
     );
     if (!isTaskDefined) {
-      //console.error("Geofencing task is not defined");
       return false;
     }
 
@@ -70,7 +64,6 @@ export async function startGeofencing() {
       await Location.requestForegroundPermissionsAsync();
 
     if (foregroundStatus !== "granted") {
-      //console.log("Foreground location permission not granted");
       return false;
     }
 
@@ -78,7 +71,6 @@ export async function startGeofencing() {
       await Location.requestBackgroundPermissionsAsync();
 
     if (backgroundStatus !== "granted") {
-      //console.log("Background location permission not granted");
       return false;
     }
 
@@ -86,12 +78,8 @@ export async function startGeofencing() {
       LOCATION_GEOFENCING_TASK
     );
     if (isRunning) {
-      //console.log("Geofencing already running");
       return true;
-    }
-
-    //console.log(cachedCampuses[0].latitude);
-    
+    }    
 
     const regions: Location.LocationRegion[] = cachedCampuses.map((campus) => ({
       identifier: campus.id.toString(),
@@ -103,7 +91,6 @@ export async function startGeofencing() {
     }));    
 
     await Location.startGeofencingAsync(LOCATION_GEOFENCING_TASK, regions);
-    //console.log("Geofencing started successfully");
     return true;
   } catch (error) {
     console.error("Error starting geofencing:", error);
@@ -118,7 +105,6 @@ export async function stopGeofencing() {
     );
     if (isRunning) {
       await Location.stopGeofencingAsync(LOCATION_GEOFENCING_TASK);
-     // console.log("Geofencing stopped");
     }
   } catch (error) {
     console.error("Error stopping geofencing:", error);

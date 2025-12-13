@@ -35,7 +35,6 @@ const SpinnerField = <T extends ItemValue>({
   error,
   ...rest
 }: SpinnerFieldProps<T>) => {
-  // add empty option
   options = [{ label: "-- Choose " }, ...options];
 
   return (
