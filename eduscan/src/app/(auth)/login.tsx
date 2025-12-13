@@ -103,7 +103,7 @@ const Login = () => {
           </Button>
 
           <TextButton disabled={isPending} href="/(auth)/register">
-            Register
+            No account yet? Register
           </TextButton>
         </DefaultView>
       </ScrollView>
