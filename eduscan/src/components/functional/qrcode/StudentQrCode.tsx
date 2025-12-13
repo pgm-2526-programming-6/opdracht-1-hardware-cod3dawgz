@@ -54,7 +54,7 @@ export default function StudentQrCode() {
     return (
       <EmptyView
         title="Wrong Location"
-        description="You're not at campus"
+        description="You're not at a campus"
         icon="location-off"
       />
     );
