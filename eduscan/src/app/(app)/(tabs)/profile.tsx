@@ -6,10 +6,11 @@ import ThemedText from "@design/Typography/ThemedText";
 import DefaultView from "@design/View/DefaultView";
 import { View, StyleSheet, Switch, TouchableOpacity, Text } from "react-native";
 import { Colors, Spacing } from "@style/theme";
-import { useColorBlindMode } from "@core/utils/ColorBlindModeContext";
+import { useSettings } from "@core/utils/SettingsContext";
 import { getClassById } from "@core/modules/classes/api.classes";
 import { useQuery } from "@tanstack/react-query";
 import { Class } from "@core/modules/classes/types.classes";
+import * as Haptics from "expo-haptics";
 
 const getInitials = (firstName?: string, lastName?: string) => {
   const first = firstName?.charAt(0).toUpperCase() || "";
@@ -52,9 +53,28 @@ export default function ProfilePage() {
     queryFn: () => getClassById(user.class_id),
   });
 
-  const { isColorBlindMode, toggleColorBlindMode } = useColorBlindMode();
+  const {
+  isColorBlindMode,
+  isSoundEnabled,
+  isVibrationEnabled,
+  toggleColorBlindMode,
+  toggleSound,
+  toggleVibration,
+} = useSettings();
   const initials = getInitials(user.first_name, user.last_name);
   const avatarColor = getColorFromString(user.email || user.id || "");
+
+  const triggerHaptic = () => {
+    if (isVibrationEnabled) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  };
+
+    const triggerHapticVibration = () => {
+    if (!isVibrationEnabled) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  };
 
   return (
     <DefaultView padding={false}>
@@ -79,10 +99,43 @@ export default function ProfilePage() {
           <ThemedText style={styles.value}>{user.email}</ThemedText>
         </View>
 
+        <View style={styles.divider}>
+          <TouchableOpacity style={styles.settingCard} onPress={() => {triggerHaptic();   toggleSound();}} activeOpacity={0.7}>
+            <View style={styles.settingContent}>
+              <View style={styles.settingTextContainer}>
+                <ThemedText style={styles.settingLabel}>Sound</ThemedText>
+              </View>
+              <Switch
+                value={isSoundEnabled}
+                onValueChange={() => {triggerHaptic(); toggleSound();}}
+                trackColor={{ false: Colors.gray["300"], true: Colors.primary["300"] }}
+                thumbColor={isSoundEnabled ? Colors.primary["600"] : Colors.white}
+                ios_backgroundColor={Colors.gray["300"]}
+              />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.settingCard} onPress={() => {triggerHapticVibration(); toggleVibration();}} activeOpacity={0.7}>
+            <View style={styles.settingContent}>
+              <View style={styles.settingTextContainer}>
+                <ThemedText style={styles.settingLabel}>Vibration</ThemedText>
+              </View>
+              <Switch
+                value={isVibrationEnabled}
+                onValueChange={() => {triggerHapticVibration(); toggleVibration();}}
+                trackColor={{ false: Colors.gray["300"], true: Colors.primary["300"] }}
+                thumbColor={isVibrationEnabled ? Colors.primary["600"] : Colors.white}
+                ios_backgroundColor={Colors.gray["300"]}
+              />
+            </View>
+          </TouchableOpacity>
+        </View>
+
+
         {!user.is_teacher && (
           <TouchableOpacity
-            style={styles.settingCard}
-            onPress={toggleColorBlindMode}
+            style={[styles.settingCard, styles.colorblindCard]}
+            onPress={() => {triggerHaptic(); toggleColorBlindMode();}}
             activeOpacity={0.7}
           >
             <View style={styles.settingContent}>
@@ -96,7 +149,7 @@ export default function ProfilePage() {
               </View>
               <Switch
                 value={isColorBlindMode}
-                onValueChange={toggleColorBlindMode}
+                onValueChange={() => {triggerHaptic(); toggleColorBlindMode();}}
                 trackColor={{
                   false: Colors.gray["300"],
                   true: Colors.primary["300"],
@@ -110,7 +163,7 @@ export default function ProfilePage() {
           </TouchableOpacity>
         )}
 
-        <Button onPress={() => logout()}>Log out</Button>
+        <Button onPress={() => {triggerHaptic(); logout()}}>Log out</Button>
       </View>
     </DefaultView>
   );
@@ -120,7 +173,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    paddingTop: Spacing["3xl"],
+    paddingTop: Spacing.lg,
     paddingHorizontal: Spacing.md,
   },
   header: {
@@ -133,12 +186,17 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   avatar: {
-    width: 120,
-    height: 120,
+    width: 100,
+    height: 100,
     borderRadius: 60,
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",
+  },
+  divider: {
+    display:'flex',
+    flexDirection:'row',
+    gap:'2%'
   },
   initialsText: {
     fontSize: 48,
@@ -153,7 +211,7 @@ const styles = StyleSheet.create({
     width: "90%",
     backgroundColor: Colors.white,
     borderRadius: 12,
-    padding: Spacing.lg,
+    padding: Spacing.md,
     marginBottom: Spacing.md,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
@@ -172,16 +230,20 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   settingCard: {
-    width: "90%",
+    width: "44%",
     backgroundColor: Colors.white,
     borderRadius: 12,
-    padding: Spacing.lg,
+    padding: Spacing.md,
+    paddingVertical: Spacing.xs,
     marginBottom: Spacing.md,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
     shadowRadius: 2,
     elevation: 2,
+  },
+  colorblindCard: {
+    width:'90%',
   },
   settingContent: {
     flexDirection: "row",
@@ -193,7 +255,7 @@ const styles = StyleSheet.create({
     marginRight: Spacing.md,
   },
   settingLabel: {
-    fontSize: 16,
+    fontSize: 14,
     color: Colors.text,
     fontWeight: "500",
     marginBottom: Spacing.xs / 2,

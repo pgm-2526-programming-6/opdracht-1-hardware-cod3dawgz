@@ -8,7 +8,7 @@ import EmptyView from "@design/View/EmptyView";
 import AttendanceCalendar from "@functional/calendar/AttendanceCalendar";
 import { useQuery } from "@tanstack/react-query";
 import { ScrollView, StyleSheet } from "react-native";
-import { useColorBlindMode } from "@core/utils/ColorBlindModeContext";
+import { useSettings } from "@core/utils/SettingsContext";
 import ThemedText from "@design/Typography/ThemedText";
 import { Colors, Spacing } from "@style/theme";
 
@@ -16,7 +16,7 @@ export default function AttendancesPage() {
 
   const user = useUser();
   const userId = user?.id;
-  const { isColorBlindMode } = useColorBlindMode();
+  const { isColorBlindMode } = useSettings();
 
   const {
       data: attendances,
