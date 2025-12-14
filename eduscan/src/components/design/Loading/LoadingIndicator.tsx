@@ -6,7 +6,6 @@ type Props = {
   timeout?: number;
 };
 
-// loading indicator that only shows if it takes longer than 1 second
 const LoadingIndicator = ({ timeout = 1000 }: Props) => {
   const [isVisible, setVisible] = useState(false);
 
