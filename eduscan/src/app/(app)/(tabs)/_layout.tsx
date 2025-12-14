@@ -11,7 +11,7 @@ const TabLayout = () => {
   return (
     <Tabs screenOptions={{ ...DefaultScreenOptions, headerTitle: "" }}>
       <Tabs.Screen
-        name="home"
+        name="index"
         options={{
           title: isTeacher ? "Scan" : "Code",
           tabBarIcon: ({ color, size }) => <MaterialIcons size={size} name={isTeacher ? "qr-code-scanner" : "qr-code"}  color={color} />,

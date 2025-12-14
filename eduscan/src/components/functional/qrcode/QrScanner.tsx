@@ -1,6 +1,6 @@
 import { CameraView, BarcodeScanningResult } from "expo-camera";
 import { useState } from "react";
-import { StyleSheet, Text, View, Alert, Button } from "react-native";
+import { StyleSheet, Text, View, Alert } from "react-native";
 import * as Haptics from "expo-haptics";
 import { Colors, Spacing } from "@style/theme";
 import { createAttendance, checkAttendanceExists } from "@core/modules/attendances/api.attendances";

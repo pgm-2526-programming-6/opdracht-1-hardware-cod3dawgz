@@ -4,7 +4,7 @@ import Button from "@design/Button/Button";
 import TextButton from "@design/Button/TextButton";
 import InputField from "@design/Form/InputField";
 import Logo from "@design/Logo/Logo";
-import {  useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import ThemedText from "@design/Typography/ThemedText";
 import DefaultView from "@design/View/DefaultView";
 import useAuth from "@functional/auth/useAuth";
@@ -21,7 +21,6 @@ const schema = yup.object().shape({
   password: yup.string().required(),
 });
 
-
 const Login = () => {
   const router = useRouter();
   const { login } = useAuth();
@@ -29,10 +28,9 @@ const Login = () => {
   const { mutate, error, isPending } = useMutation({
     mutationFn: login,
     onSuccess: () => {
-      router.replace("/(app)/(tabs)/home");
+      router.replace("/(app)/(tabs)");
     },
   });
-
 
   const {
     control,
@@ -98,7 +96,11 @@ const Login = () => {
             )}
           />
 
-          <Button disabled={isPending} style={styles.button} onPress={handleSubmit(handleLogin)}>
+          <Button
+            disabled={isPending}
+            style={styles.button}
+            onPress={handleSubmit(handleLogin)}
+          >
             Login
           </Button>
 
@@ -114,7 +116,7 @@ const Login = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: "#F5F5F5",
   },
   title: {
     marginBottom: Spacing["2xl"],
