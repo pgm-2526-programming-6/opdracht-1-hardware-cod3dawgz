@@ -1,5 +1,3 @@
-import { Text, View } from "react-native";
-import ThemedText from "@design/Typography/ThemedText";
 import DefaultView from "@design/View/DefaultView";
 import useUser from "@functional/auth/useUser";
 import StudentQrCode from "@functional/qrcode/StudentQrCode";
